@@ -4,16 +4,16 @@ import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
   return (
-    <div className="flex flex-col w-full h-20 bg-darkNavy text-white justify-center">
-      <div className="flex mx-6 h-16">
+    <div className="flex flex-col w-full h-18 bg-darkNavy font-normal text-white justify-center">
+      <div className="flex mx-6 h-16 gap-1">
         <NavLink to="/" className="mr-6">
           <img className="h-16" src={whiteLogo} alt="logo" />
         </NavLink>
         <NavLink
           to="/"
           className={({ isActive }) =>
-            (isActive ? "bg-gray text-darkNavy" : "") +
-            " px-6 py-2 rounded-md self-center"
+            (isActive ? "bg-white text-black" : "") +
+            " px-6 py-2 rounded-md self-center outline-none hover:border-white border-transparent border-2"
           }
         >
           Home
@@ -21,8 +21,8 @@ const NavBar = () => {
         <NavLink
           to="/start"
           className={({ isActive }) =>
-            (isActive ? "bg-gray text-darkNavy" : "") +
-            " px-6 py-2 rounded-md self-center"
+            (isActive ? "bg-white text-black" : "") +
+            " px-6 py-2 rounded-md self-center hover:border-white border-transparent border-2"
           }
         >
           Start Workout
@@ -30,8 +30,8 @@ const NavBar = () => {
         <NavLink
           to="/history"
           className={({ isActive }) =>
-            (isActive ? "bg-gray text-darkNavy" : "") +
-            " px-6 py-2 rounded-md self-center"
+            (isActive ? "bg-white text-black" : "") +
+            " px-6 py-2 rounded-md self-center hover:border-white border-transparent border-2"
           }
         >
           History
@@ -39,8 +39,8 @@ const NavBar = () => {
         <NavLink
           to="/exercises"
           className={({ isActive }) =>
-            (isActive ? "bg-gray text-darkNavy" : "") +
-            " px-6 py-2 rounded-md self-center"
+            (isActive ? "bg-white text-black" : "") +
+            " px-6 py-2 rounded-md self-center hover:border-white border-transparent border-2"
           }
         >
           Exercises
@@ -48,8 +48,8 @@ const NavBar = () => {
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            (isActive ? "bg-gray text-darkNavy" : "") +
-            " px-6 py-2 rounded-md self-center"
+            (isActive ? "bg-white text-black" : "") +
+            " px-6 py-2 rounded-md self-center hover:border-white border-transparent border-2"
           }
         >
           Profile
