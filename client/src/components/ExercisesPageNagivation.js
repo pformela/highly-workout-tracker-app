@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { fetchExercises } from "../redux/exercise-slice";
+import { fetchExercises } from "../app/exercise-slice";
 
 const ExercisesPageNavigation = ({
   filter,

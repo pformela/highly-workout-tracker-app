@@ -21,7 +21,46 @@ app.get("/api", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/api/getExercises", (req, res) => {
+app.post("/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const session = driver.session();
+  session
+    .run(
+      `
+      CREATE (u:User {username
+      : $username, password: $password})
+      RETURN u
+      `,
+      { username, password }
+    )
+    .then((result) => {
+      session.close();
+      res.send(result.records[0].get("u").properties);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.get("/users", async (req, res) => {
+  const session = driver.session();
+  session
+    .run(
+      `
+      MATCH (u:User)
+      RETURN u
+      `
+    )
+    .then((result) => {
+      session.close();
+      res.send(result.records.map((r) => r.get("u").properties));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.get("/api/getExercises", async (req, res) => {
   const name = req.query.name ? req.query.name : "";
   const type = req.query.type ? req.query.type : "";
   const muscle = req.query.muscle ? req.query.muscle : "";
@@ -37,7 +76,8 @@ app.get("/api/getExercises", (req, res) => {
         difficulty ? ":" + difficulty : ""
       }) 
       WHERE ex.name CONTAINS "${name}" 
-      RETURN ex SKIP ${offset} LIMIT 25`
+      RETURN ex 
+      SKIP ${offset} LIMIT 25`
     )
     .then((exerciseResult) => {
       session.close();

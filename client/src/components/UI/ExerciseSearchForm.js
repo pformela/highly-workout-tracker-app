@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik } from "formik";
 import { useDispatch } from "react-redux";
-import { fetchExercises } from "../../redux/exercise-slice";
+import { fetchExercises } from "../../app/exercise-slice";
 
 const ExerciseSearchForm = (props) => {
   const dispatch = useDispatch();
