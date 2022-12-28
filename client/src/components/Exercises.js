@@ -3,7 +3,7 @@ import NavBar from "./NavBar";
 import ExerciseSearchForm from "./UI/ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
 
-const TYPES = [
+export const TYPES = [
   "Cardio",
   "Olympic_weightlifting",
   "Plyometrics",
@@ -13,7 +13,7 @@ const TYPES = [
   "Strongman",
 ];
 
-const MUSCLE = [
+export const MUSCLE = [
   "Abdominals",
   "Abductors",
   "Adductors",
@@ -32,7 +32,7 @@ const MUSCLE = [
   "Triceps",
 ];
 
-const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
+export const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
 
 const Exercises = () => {
   return (

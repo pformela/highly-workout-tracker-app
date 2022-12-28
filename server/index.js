@@ -2,7 +2,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import neo4j from "neo4j-driver";
-import axios from "axios";
 
 const app = express();
 
@@ -40,14 +39,35 @@ app.get("/api/getExercises", (req, res) => {
       WHERE ex.name CONTAINS "${name}" 
       RETURN ex SKIP ${offset} LIMIT 25`
     )
-    .then((result) => {
-      res.send(result.records.map((r) => r.get("ex")));
+    .then((exerciseResult) => {
+      session.close();
+      const newSession = driver.session();
+      newSession
+        .run(
+          `
+            MATCH (ex:Exercise${type ? ":" + type : ""}${
+            muscle ? ":" + muscle : ""
+          }${difficulty ? ":" + difficulty : ""}) 
+            WHERE ex.name CONTAINS "${name}" 
+            RETURN count(ex) as count`
+        )
+        .then((countResult) => {
+          res.send({
+            result: exerciseResult.records.map((r) => {
+              return { ...r.get("ex").properties, labels: r.get("ex").labels };
+            }),
+            count: countResult.records[0].get("count").low,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .then(() => {
+          newSession.close();
+        });
     })
     .catch((error) => {
       console.log(error);
-    })
-    .then(() => {
-      session.close();
     });
 });
 
@@ -69,8 +89,9 @@ app.get("/api/getNumberOfExercises", (req, res) => {
       WHERE ex.name CONTAINS "${name}" 
       RETURN count(ex) as count`
     )
-    .then((result) => {
-      res.send(result.records);
+    .then((res) => {
+      console.log(res.records);
+      res.send(res.records);
     })
     .catch((error) => {
       console.log(error);
