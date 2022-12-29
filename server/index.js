@@ -2,6 +2,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import neo4j from "neo4j-driver";
+import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const app = express();
 
@@ -22,20 +25,119 @@ app.get("/api", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
+  const sanitizedEmail = email.toLowerCase();
+
+  const generatedUserId = uuidv4();
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const emailSession = driver.session();
+  const existingEmail = emailSession
+    .run(
+      `
+      MATCH (u:User {email: "${sanitizedEmail}"})
+      RETURN u
+      `
+    )
+    .then((result) => {
+      if (result.records[0]) {
+        res.status(409).send(existingEmail.toString());
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then((res) => {
+      emailSession.close();
+    });
+
+  const userSession = driver.session();
+  const existingUser = userSession
+    .run(
+      `
+      MATCH (u:User {username: "${username}"})
+      RETURN u
+      `
+    )
+    .then((result) => {
+      if (result.records[0]) {
+        res.status(409).send("User with this name already exists.");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then((res) => {
+      userSession.close();
+    });
+
+  const data = {
+    id: generatedUserId,
+    username,
+    hashedPassword: hashedPassword,
+    email: sanitizedEmail,
+  };
+
+  const newUserSession = driver.session();
+
+  newUserSession
+    .run(
+      `
+      CREATE (u:User {user_id: "${data.id}", username: "${data.username}", hashed_password: "${data.hashedPassword}", email: "${data.email}"})
+      RETURN u
+      `
+    )
+    .then((result) => {
+      newUserSession.close();
+      const token = jwt.sign(
+        { username: data.username, email: data.email },
+        "secret123",
+        {
+          expiresIn: 60 * 60 * 3,
+        }
+      );
+      res.status(201).json({ token, userId: data.id });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+app.post("/login", async (req, res) => {
+  const { username, password, email } = req.body;
+
   const session = driver.session();
+
   session
     .run(
       `
-      CREATE (u:User {username
-      : $username, password: $password})
+      MATCH (u:User {email: "${email}"})
       RETURN u
-      `,
-      { username, password }
+      `
     )
     .then((result) => {
       session.close();
-      res.send(result.records[0].get("u").properties);
+      try {
+        const user = result.records[0].get("u").properties;
+        bcrypt.compare(password, user.hashed_password, (err, result) => {
+          if (result) {
+            const token = jwt.sign(
+              { username: username, email: email },
+              "secret123",
+              {
+                expiresIn: 60 * 60 * 3,
+              }
+            );
+            res
+              .status(201)
+              .json({ token, userId: user.user_id, username: user.username });
+          } else {
+            res.status(400).send("Invalid credentials.");
+          }
+        });
+      } catch (error) {
+        res.status(400).send("No user registered under this email.");
+      }
     })
     .catch((error) => {
       console.log(error);
