@@ -24,6 +24,27 @@ app.get("/api", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/api/users/:userId", (req, res) => {
+  const { userId } = req.params;
+  const session = driver.session();
+  session
+    .run(
+      `
+      MATCH (u:User {user_id: "${userId}"})
+      RETURN u
+      `
+    )
+    .then((result) => {
+      res.send(result.records[0]._fields[0].properties);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then((res) => {
+      session.close();
+    });
+});
+
 app.post("/signup", async (req, res) => {
   const { username, password, email } = req.body;
   const sanitizedEmail = email.toLowerCase();
@@ -130,7 +151,12 @@ app.post("/login", async (req, res) => {
             );
             res
               .status(201)
-              .json({ token, userId: user.user_id, username: user.username });
+              .json({
+                token,
+                userId: user.user_id,
+                username: user.username,
+                email: user.email,
+              });
           } else {
             res.status(400).send("Invalid credentials.");
           }

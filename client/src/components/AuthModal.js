@@ -4,6 +4,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { authActions } from "../app/auth-slice";
+import { userActions } from "../app/user-slice";
 import { useDispatch } from "react-redux";
 import NavBar from "./NavBar";
 import Button from "./UI/Button";
@@ -81,11 +82,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
               maxAge: 3600,
             });
 
-            setCookie("Username", response.data.username, {
-              path: "/",
-              maxAge: 3600,
-            });
-
             setCookie("UserId", response.data.userId, {
               path: "/",
               maxAge: 3600,
@@ -99,11 +95,25 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                   userId: response.data.userId,
                 })
               );
+              dispatch(
+                userActions.setUser({
+                  email: data.email,
+                  username: data.username,
+                  userId: response.data.userId,
+                })
+              );
               navigate("/home");
             } else if (success && !isSignUp) {
               dispatch(
                 authActions.authSuccess({
                   token: response.data.token,
+                  userId: response.data.userId,
+                })
+              );
+              dispatch(
+                userActions.setUser({
+                  email: response.data.email,
+                  username: response.data.username,
                   userId: response.data.userId,
                 })
               );
@@ -138,7 +148,9 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                   Log In to Highly
                 </div>
               )}
-              {errors.email && touched.email && errors.email}
+              {errors.email && touched.email && errors.email ? (
+                <div className="text-red-500">{errors.email}</div>
+              ) : null}
               <input
                 className="bg-darkNavy p-2 text-white rounded-xl w-min text-xl"
                 type="email"
@@ -147,7 +159,9 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                 onChange={handleChange}
                 value={values.email}
               />
-              {errors.password && touched.password && errors.password}
+              {errors.password && touched.password && errors.password ? (
+                <div className="text-red-500">{errors.password}</div>
+              ) : null}
               <input
                 className="bg-darkNavy p-2 text-white rounded-xl w-min text-xl"
                 type="password"
@@ -158,7 +172,9 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
               />
               {isSignUp && (
                 <>
-                  {errors.username && touched.username && errors.username}
+                  {errors.username && touched.username && errors.username ? (
+                    <div className="text-red-500">{errors.username}</div>
+                  ) : null}
                   <input
                     className="bg-darkNavy p-2 text-white rounded-xl w-min text-xl"
                     type="text"
@@ -168,8 +184,10 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
                     value={values.username}
                   />
                   {errors.confirmPassword &&
-                    touched.confirmPassword &&
-                    errors.confirmPassword}
+                  touched.confirmPassword &&
+                  errors.confirmPassword ? (
+                    <div className="text-red-500">{errors.confirmPassword}</div>
+                  ) : null}
                   <input
                     className="bg-darkNavy p-2 text-white rounded-xl w-min text-xl"
                     type="password"

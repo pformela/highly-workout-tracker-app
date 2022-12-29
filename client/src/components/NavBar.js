@@ -2,8 +2,9 @@ import React from "react";
 import whiteLogo from "../images/higly-logo-white.png";
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "../app/auth-slice";
-import { NavLink } from "react-router-dom";
+import { NavLink, redirect } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import Button from "./UI/Button";
 
 const NavBar = () => {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -36,24 +37,28 @@ const NavBar = () => {
         >
           Home
         </NavLink>
-        <NavLink
-          to="/start"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-          }
-        >
-          Start Workout
-        </NavLink>
-        <NavLink
-          to="/history"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-          }
-        >
-          History
-        </NavLink>
+        {isAuthenticated ? (
+          <NavLink
+            to="/startWorkout"
+            className={({ isActive }) =>
+              (isActive ? "bg-white text-black" : "") +
+              " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
+            }
+          >
+            Start Workout
+          </NavLink>
+        ) : null}
+        {isAuthenticated ? (
+          <NavLink
+            to="/history"
+            className={({ isActive }) =>
+              (isActive ? "bg-white text-black" : "") +
+              " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
+            }
+          >
+            History
+          </NavLink>
+        ) : null}
         <NavLink
           to="/exercises"
           className={({ isActive }) =>
@@ -63,15 +68,17 @@ const NavBar = () => {
         >
           Exercises
         </NavLink>
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-2 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-          }
-        >
-          Profile
-        </NavLink>
+        {isAuthenticated ? (
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              (isActive ? "bg-white text-black" : "") +
+              " px-2 py-2 rounded-md self-center hover:border-white border-transparent border-2"
+            }
+          >
+            Profile
+          </NavLink>
+        ) : null}
       </div>
       {!isAuthenticated ? (
         <div className="flex flex-row justify-self-end mr-6 gap-1">
@@ -96,16 +103,14 @@ const NavBar = () => {
         </div>
       ) : (
         <div className="flex flex-row justify-self-end mr-6 gap-1">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              (isActive ? "bg-white text-black" : "") +
-              " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-            }
-            onClick={handleLogout}
+          <Button
+            onClick={() => {
+              handleLogout();
+              redirect("/");
+            }}
           >
             Logout
-          </NavLink>
+          </Button>
         </div>
       )}
     </div>

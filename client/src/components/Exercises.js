@@ -1,6 +1,6 @@
 import React from "react";
 import NavBar from "./NavBar";
-import ExerciseSearchForm from "./UI/ExerciseSearchForm";
+import ExerciseSearchForm from "./ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
 
 export const TYPES = [
