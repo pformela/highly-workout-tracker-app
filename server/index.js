@@ -1,24 +1,29 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import neo4j from "neo4j-driver";
-import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+require("dotenv").config();
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const neo4j = require("neo4j-driver");
+const { uuid } = require("uuidv4");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const corsOptions = require("./config/corsOptions");
 
 const app = express();
 
 const driver = neo4j.driver(
-  "neo4j://localhost:7687",
-  neo4j.auth.basic("neo4j", "test1234")
+  process.env("NEO4J_URI"),
+  neo4j.auth.basic(process.env("NEO4J_LOGIN"), process.env("NEO4J_PASSWORD"))
 );
 
+app.use(express.json());
+app.use(cookieParser());
+app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/", require("./routes/root"));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
-const server = app.listen(4000, () => {
-  console.log("Listening on port %s...", server.address().port);
-});
+app.use("/users", require("./routes/userRoutes"));
 
 app.get("/api", (req, res) => {
   res.send("Hello World!");
@@ -30,9 +35,9 @@ app.get("/api/users/:userId", (req, res) => {
   session
     .run(
       `
-      MATCH (u:User {user_id: "${userId}"})
-      RETURN u
-      `
+    MATCH (u:User {user_id: "${userId}"})
+    RETURN u
+    `
     )
     .then((result) => {
       res.send(result.records[0]._fields[0].properties);
@@ -56,9 +61,9 @@ app.post("/signup", async (req, res) => {
   const existingEmail = emailSession
     .run(
       `
-      MATCH (u:User {email: "${sanitizedEmail}"})
-      RETURN u
-      `
+    MATCH (u:User {email: "${sanitizedEmail}"})
+    RETURN u
+    `
     )
     .then((result) => {
       if (result.records[0]) {
@@ -104,9 +109,9 @@ app.post("/signup", async (req, res) => {
   newUserSession
     .run(
       `
-      CREATE (u:User {user_id: "${data.id}", username: "${data.username}", hashed_password: "${data.hashedPassword}", email: "${data.email}"})
-      RETURN u
-      `
+        CREATE (u:User {user_id: "${data.id}", username: "${data.username}", hashed_password: "${data.hashedPassword}", email: "${data.email}"})
+        RETURN u
+        `
     )
     .then((result) => {
       newUserSession.close();
@@ -149,14 +154,12 @@ app.post("/login", async (req, res) => {
                 expiresIn: 60 * 60 * 3,
               }
             );
-            res
-              .status(201)
-              .json({
-                token,
-                userId: user.user_id,
-                username: user.username,
-                email: user.email,
-              });
+            res.status(201).json({
+              token,
+              userId: user.user_id,
+              username: user.username,
+              email: user.email,
+            });
           } else {
             res.status(400).send("Invalid credentials.");
           }
@@ -175,9 +178,9 @@ app.get("/users", async (req, res) => {
   session
     .run(
       `
-      MATCH (u:User)
-      RETURN u
-      `
+          MATCH (u:User)
+          RETURN u
+          `
     )
     .then((result) => {
       session.close();
@@ -200,12 +203,12 @@ app.get("/api/getExercises", async (req, res) => {
   session
     .run(
       `
-      MATCH (ex:Exercise${type ? ":" + type : ""}${muscle ? ":" + muscle : ""}${
-        difficulty ? ":" + difficulty : ""
-      }) 
-      WHERE ex.name CONTAINS "${name}" 
-      RETURN ex 
-      SKIP ${offset} LIMIT 25`
+            MATCH (ex:Exercise${type ? ":" + type : ""}${
+        muscle ? ":" + muscle : ""
+      }${difficulty ? ":" + difficulty : ""}) 
+            WHERE ex.name CONTAINS "${name}" 
+            RETURN ex 
+            SKIP ${offset} LIMIT 25`
     )
     .then((exerciseResult) => {
       session.close();
@@ -213,11 +216,11 @@ app.get("/api/getExercises", async (req, res) => {
       newSession
         .run(
           `
-            MATCH (ex:Exercise${type ? ":" + type : ""}${
+                MATCH (ex:Exercise${type ? ":" + type : ""}${
             muscle ? ":" + muscle : ""
           }${difficulty ? ":" + difficulty : ""}) 
-            WHERE ex.name CONTAINS "${name}" 
-            RETURN count(ex) as count`
+                WHERE ex.name CONTAINS "${name}" 
+                RETURN count(ex) as count`
         )
         .then((countResult) => {
           res.send({
@@ -251,11 +254,11 @@ app.get("/api/getNumberOfExercises", (req, res) => {
   session
     .run(
       `
-      MATCH (ex:Exercise${type ? ":" + type : ""}${muscle ? ":" + muscle : ""}${
-        difficulty ? ":" + difficulty : ""
-      }) 
-      WHERE ex.name CONTAINS "${name}" 
-      RETURN count(ex) as count`
+        MATCH (ex:Exercise${type ? ":" + type : ""}${
+        muscle ? ":" + muscle : ""
+      }${difficulty ? ":" + difficulty : ""}) 
+        WHERE ex.name CONTAINS "${name}" 
+        RETURN count(ex) as count`
     )
     .then((res) => {
       console.log(res.records);
@@ -267,4 +270,19 @@ app.get("/api/getNumberOfExercises", (req, res) => {
     .then(() => {
       session.close();
     });
+});
+
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ mesage: "404 Not found" });
+  } else {
+    res.type("txt").send("404 Not found");
+  }
+});
+
+const server = app.listen(4000, () => {
+  console.log("Listening on port %s...", server.address().port);
 });
