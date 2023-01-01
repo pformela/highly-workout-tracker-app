@@ -29,106 +29,6 @@ app.get("/api", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/api/users/:userId", (req, res) => {
-  const { userId } = req.params;
-  const session = driver.session();
-  session
-    .run(
-      `
-    MATCH (u:User {user_id: "${userId}"})
-    RETURN u
-    `
-    )
-    .then((result) => {
-      res.send(result.records[0]._fields[0].properties);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .then((res) => {
-      session.close();
-    });
-});
-
-app.post("/signup", async (req, res) => {
-  const { username, password, email } = req.body;
-  const sanitizedEmail = email.toLowerCase();
-
-  const generatedUserId = uuidv4();
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const emailSession = driver.session();
-  const existingEmail = emailSession
-    .run(
-      `
-    MATCH (u:User {email: "${sanitizedEmail}"})
-    RETURN u
-    `
-    )
-    .then((result) => {
-      if (result.records[0]) {
-        res.status(409).send(existingEmail.toString());
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .then((res) => {
-      emailSession.close();
-    });
-
-  const userSession = driver.session();
-  const existingUser = userSession
-    .run(
-      `
-      MATCH (u:User {username: "${username}"})
-      RETURN u
-      `
-    )
-    .then((result) => {
-      if (result.records[0]) {
-        res.status(409).send("User with this name already exists.");
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .then((res) => {
-      userSession.close();
-    });
-
-  const data = {
-    id: generatedUserId,
-    username,
-    hashedPassword: hashedPassword,
-    email: sanitizedEmail,
-  };
-
-  const newUserSession = driver.session();
-
-  newUserSession
-    .run(
-      `
-        CREATE (u:User {user_id: "${data.id}", username: "${data.username}", hashed_password: "${data.hashedPassword}", email: "${data.email}"})
-        RETURN u
-        `
-    )
-    .then((result) => {
-      newUserSession.close();
-      const token = jwt.sign(
-        { username: data.username, email: data.email },
-        "secret123",
-        {
-          expiresIn: 60 * 60 * 3,
-        }
-      );
-      res.status(201).json({ token, userId: data.id });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
-
 app.post("/login", async (req, res) => {
   const { username, password, email } = req.body;
 
@@ -167,24 +67,6 @@ app.post("/login", async (req, res) => {
       } catch (error) {
         res.status(400).send("No user registered under this email.");
       }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
-
-app.get("/users", async (req, res) => {
-  const session = driver.session();
-  session
-    .run(
-      `
-          MATCH (u:User)
-          RETURN u
-          `
-    )
-    .then((result) => {
-      session.close();
-      res.send(result.records.map((r) => r.get("u").properties));
     })
     .catch((error) => {
       console.log(error);
@@ -277,7 +159,7 @@ app.all("*", (req, res) => {
   if (req.accepts("html")) {
     res.sendFile(path.join(__dirname, "views", "404.html"));
   } else if (req.accepts("json")) {
-    res.json({ mesage: "404 Not found" });
+    res.json({ message: "404 Not found" });
   } else {
     res.type("txt").send("404 Not found");
   }
