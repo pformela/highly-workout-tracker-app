@@ -10,10 +10,11 @@ const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/corsOptions");
 
 const app = express();
+const path = require("path");
 
 const driver = neo4j.driver(
-  process.env("NEO4J_URI"),
-  neo4j.auth.basic(process.env("NEO4J_LOGIN"), process.env("NEO4J_PASSWORD"))
+  process.env.NEO4J_URI,
+  neo4j.auth.basic(process.env.NEO4J_LOGIN, process.env.NEO4J_PASSWORD)
 );
 
 app.use(express.json());

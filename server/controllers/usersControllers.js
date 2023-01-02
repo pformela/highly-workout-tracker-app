@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
+const asyncHandler = require("express-async-handler");
 
 // Get all users
-const getUser = async (req, res) => {
+const getUser = asyncHandler(async (req, res) => {
   const session = driver.session();
   const result = await session
     .run(
@@ -21,10 +22,10 @@ const getUser = async (req, res) => {
     .catch((error) => {
       console.log(error);
     });
-};
+});
 
 // Create new user
-const createNewUser = async (req, res) => {
+const createNewUser = asyncHandler(async (req, res) => {
   const { username, password, email } = req.body;
 
   // Confirm data
@@ -102,10 +103,10 @@ const createNewUser = async (req, res) => {
     .catch((error) => {
       res.status(401).send("Invalid user data received");
     });
-};
+});
 
 // Update a user
-const updateUserUsername = async (req, res) => {
+const updateUserUsername = asyncHandler(async (req, res) => {
   const { user_id, username, password, email } = req.body;
 
   // Confirm data
@@ -168,9 +169,9 @@ const updateUserUsername = async (req, res) => {
     .catch((error) => {
       res.status(404).send("Error while changing username");
     });
-};
+});
 
-const updateUserEmail = async (req, res) => {
+const updateUserEmail = asyncHandler(async (req, res) => {
   const { user_id, username, password, email } = req.body;
 
   // Confirm data
@@ -233,9 +234,9 @@ const updateUserEmail = async (req, res) => {
     .catch((error) => {
       res.status(404).send("Error while changing email");
     });
-};
+});
 
-const updateUserPassword = async (req, res) => {
+const updateUserPassword = asyncHandler(async (req, res) => {
   const { user_id, username, password, email } = req.body;
 
   // Confirm data
@@ -282,10 +283,10 @@ const updateUserPassword = async (req, res) => {
     .catch((error) => {
       res.status(404).send("Error while changing password");
     });
-};
+});
 
 // Delete a user
-const deleteUser = async (req, res) => {
+const deleteUser = asyncHandler(async (req, res) => {
   const { user_id } = req.body;
 
   // Confirm data
@@ -328,10 +329,10 @@ const deleteUser = async (req, res) => {
     .catch((error) => {
       res.status(404).send("Error while deleting user");
     });
-};
+});
 
 module.exports = {
-  getAllUsers,
+  getUser,
   createNewUser,
   updateUserUsername,
   updateUserEmail,
