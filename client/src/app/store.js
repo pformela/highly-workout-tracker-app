@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import exerciseReducer from "./exercise-slice";
-import authReducer from "./auth-slice";
-import userReducer from "./user-slice";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import exerciseReducer from "../features/exercises/exercisesSlice";
+import authReducer from "../features/authentication/authSlice";
+import userReducer from "../features/user/userSlice";
 import { apiSlice } from "./api/apiSlice";
 
-export default configureStore({
+export const store = configureStore({
   reducer: {
-    [apiSlice.reducre]: apiSlice.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
     exercise: exerciseReducer,
     auth: authReducer,
     user: userReducer,
@@ -15,3 +16,5 @@ export default configureStore({
     getDefaultMiddleware().concat(apiSlice.middleware),
   devTools: true,
 });
+
+setupListeners(store.dispatch);

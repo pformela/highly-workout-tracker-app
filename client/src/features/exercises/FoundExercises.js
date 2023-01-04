@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import ExercisesPageNavigation from "./ExercisesPageNagivation";
+import { useSelector } from "react-redux";
+import ExercisesPageNavigation from "./ExercisesPageNavigation";
 import Exercise from "./Exercise";
 
 const FoundExercises = () => {
@@ -9,7 +9,6 @@ const FoundExercises = () => {
   const count = useSelector((state) => state.exercise.count);
   const filter = useSelector((state) => state.exercise.filter);
   const loading = useSelector((state) => state.exercise.loading);
-  const dispatch = useDispatch();
 
   return (
     <div>
