@@ -5,14 +5,14 @@ const userController = require("../controllers/usersControllers");
 
 router
   .route("/")
-  .get(userController.getUser())
-  .post(userController.createNewUser())
-  .delete(userController.deleteUser());
+  .get(userController.getUser)
+  .post(userController.createNewUser)
+  .delete(userController.deleteUser);
 
-router.route("/editUsername").patch(userController.editUsername());
+router.route("/editUsername").patch(userController.updateUserUsername);
 
-router.route("/editPassword").patch(userController.editPassword());
+router.route("/editPassword").patch(userController.updateUserPassword);
 
-router.route("/editEmail").patch(userController.editEmail());
+router.route("/editEmail").patch(userController.updateUserEmail);
 
 module.exports = router;

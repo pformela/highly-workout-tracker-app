@@ -13,12 +13,7 @@ export const fetchExercises = createAsyncThunk(
   "exercise/fetchExercises",
   async (data) => {
     const response = await axios.get(
-      `http://localhost:4000/api/getExercises?name=${data.name}&type=${data.type}&muscle=${data.muscle}&difficulty=${data.difficulty}&offset=${data.offset}`,
-      {
-        headers: {
-          "x-api-key": "1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b",
-        },
-      }
+      `http://localhost:4000/exercises?name=${data.name}&type=${data.type}&muscle=${data.muscle}&difficulty=${data.difficulty}&offset=${data.offset}`
     );
     return {
       data: response.data.result,
