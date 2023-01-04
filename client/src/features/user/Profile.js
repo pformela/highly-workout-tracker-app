@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import NavBar from "./NavBar";
+import NavBar from "../../components/NavBar";
 
 const Profile = () => {
   const { username, email } = useSelector((state) => state.user);

@@ -1,46 +1,24 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Exercises from "./components/Exercises";
+import Exercises from "./features/exercises/Exercises";
 import HomePage from "./components/HomePage";
 import PageNotFound from "./components/PageNotFound";
 import React from "react";
-import AuthModal from "./components/AuthModal";
-import TrainingHistory from "./components/TrainingHistory";
-import Profile from "./components/Profile";
-import { useSelector } from "react-redux";
-import StartWorkout from "./components/StartWorkout";
+import TrainingHistory from "./features/history/TrainingHistory";
+import Profile from "./features/user/Profile";
+import StartWorkout from "./features/workouts/StartWorkout";
+import Login from "./features/authentication/Login";
 
 const App = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
-
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/exercises" element={<Exercises />} />
-        <Route
-          path="/history"
-          element={
-            isAuthenticated ? (
-              <TrainingHistory />
-            ) : (
-              <AuthModal isSignUp={false} />
-            )
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            isAuthenticated ? <Profile /> : <AuthModal isSignUp={false} />
-          }
-        />
-        <Route
-          path="/startWorkout"
-          element={
-            isAuthenticated ? <StartWorkout /> : <AuthModal isSignUp={false} />
-          }
-        />
-        <Route path="/login" element={<AuthModal isSignUp={false} />} />
-        <Route path="/signup" element={<AuthModal isSignUp={true} />} />
+        <Route path="/history" element={<TrainingHistory />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/startWorkout" element={<StartWorkout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Login />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
