@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "./authSlice";
 import { useLoginMutation } from "./authApiSlice";
 import { Formik } from "formik";
+import usePersist from "../../hooks/usePersist";
 import NavBar from "../../components/NavBar";
 import Button from "../../components/UI/Button";
 
@@ -11,6 +12,7 @@ const Login = () => {
   const emailRef = useRef();
   const passRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const [persist, setPersist] = usePersist();
 
   useEffect(() => {
     emailRef.current.focus();
@@ -29,6 +31,10 @@ const Login = () => {
       </div>
     );
 
+  const handleToggle = () => {
+    setPersist(!persist);
+  };
+
   const content = (
     <Formik
       initialValues={{
@@ -45,7 +51,6 @@ const Login = () => {
         const { email, password } = values;
         try {
           const { token } = await login({ email, password }).unwrap();
-          console.log("Elo token: " + token);
           dispatch(setCredentials({ token }));
           navigate("/");
         } catch (err) {
@@ -101,6 +106,15 @@ const Login = () => {
           >
             Login
           </Button>
+          <label htmlFor="persist" className="">
+            Trust this device
+          </label>
+          <input
+            type="checkbox"
+            name="persist"
+            checked={persist}
+            onChange={handleToggle}
+          />
           <div className="text-white text-center mt-6">
             <Link to="/signup">Don't have an account? Sign up here.</Link>
           </div>

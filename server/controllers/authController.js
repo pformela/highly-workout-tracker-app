@@ -42,17 +42,18 @@ const login = asyncHandler(async (req, res) => {
         const refreshToken = jwt.sign(
           { username: user.username },
           process.env.REFRESH_TOKEN_SECRET,
-          { expiresIn: "15s" }
+          { expiresIn: "20s" }
         );
 
         res.cookie("jwt", refreshToken, {
           httpOnly: true, // only web server can access
           secure: true,
           sameSite: "none",
-          maxAge: 15 * 1000,
+          maxAge: 1000 * 60 * 60 * 24 * 7,
         });
 
         res.json({ token });
+        console.log(token);
       }
     })
     .catch((error) => {
@@ -68,6 +69,8 @@ const refresh = (req, res) => {
   }
 
   const refreshToken = cookies.jwt;
+
+  console.log("refresh token: " + refreshToken);
 
   jwt.verify(
     refreshToken,
@@ -95,7 +98,7 @@ const refresh = (req, res) => {
               },
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "15s" }
+            { expiresIn: "20s" }
           );
           res.json({ token });
         })
@@ -108,6 +111,7 @@ const refresh = (req, res) => {
 
 const logout = (req, res) => {
   const cookies = req.cookies;
+  console.log("cookies: ", cookies);
   if (!cookies?.jwt) return res.sendStatus(204); // no content
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
   res.json({ message: "Cookie cleared" });

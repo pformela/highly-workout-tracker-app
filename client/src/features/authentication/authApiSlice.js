@@ -1,5 +1,5 @@
 import { apiSlice } from "../../app/api/apiSlice";
-import { logout } from "./authSlice";
+import { logout, setCredentials } from "./authSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,6 +9,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: { ...credentials },
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log("data login: ");
+          console.log(data);
+        } catch (error) {
+          console.log(error);
+        }
+      },
     }),
     sendLogout: builder.mutation({
       query: () => ({
@@ -18,11 +27,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log(data);
+          console.log("data logout: " + data);
           dispatch(logout());
-          dispatch(apiSlice.util.resetApiState());
+          setTimeout(() => {
+            dispatch(apiSlice.util.resetApiState());
+          }, 1000);
         } catch (error) {
-          console.log(error.message);
+          console.log(error);
         }
       },
     }),
@@ -31,6 +42,16 @@ export const authApiSlice = apiSlice.injectEndpoints({
         url: "/auth/refresh",
         method: "GET",
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { token } = data;
+          console.log("tokenik: " + token);
+          dispatch(setCredentials({ token }));
+        } catch (error) {
+          console.log(error);
+        }
+      },
     }),
   }),
 });
