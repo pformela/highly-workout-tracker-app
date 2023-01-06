@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import whiteLogo from "../images/higly-logo-white.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { selectIsAuthenticated } from "../features/authentication/authSlice";
+import { useSelector } from "react-redux";
+import Button from "./UI/Button";
+import { useSendLogoutMutation } from "../features/authentication/authApiSlice";
 
 const NavBar = () => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const [sendLogout, { isLoading, isSuccess, isError, error }] =
+    useSendLogoutMutation();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) navigate("/");
+  }, [isSuccess, navigate]);
+
   return (
     <div className="flex flex-row w-full h-18 bg-darkNavy font-normal text-white justify-between">
       <div className="flex ml-6 h-16 gap-1">
@@ -20,7 +34,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/startWorkout"
+          to="/user/startWorkout"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -30,7 +44,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/history"
+          to="/user/history"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -50,7 +64,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/profile"
+          to="/user/profile"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-2 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -60,26 +74,37 @@ const NavBar = () => {
         </NavLink>
       </div>
 
-      <div className="flex flex-row justify-self-end mr-6 gap-1">
-        <NavLink
-          to="/login"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-          }
-        >
-          Login
-        </NavLink>
-        <NavLink
-          to="/signup"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
-          }
-        >
-          Sign Up
-        </NavLink>
-      </div>
+      {!isAuthenticated ? (
+        <div className="flex flex-row justify-self-end mr-6 gap-1">
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              (isActive ? "bg-white text-black" : "") +
+              " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
+            }
+          >
+            Login
+          </NavLink>
+          <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+              (isActive ? "bg-white text-black" : "") +
+              " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
+            }
+          >
+            Sign Up
+          </NavLink>
+        </div>
+      ) : (
+        <div className="flex flex-row justify-self-end mr-6 gap-1">
+          <Button
+            className="bg-navy w-min text-bold text-whiterounded-xl self-center hover:bg-silver hover:text-darkNavy"
+            onClick={sendLogout}
+          >
+            Logout
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

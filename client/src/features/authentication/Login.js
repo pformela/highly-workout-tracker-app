@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "./authSlice";
 import { useLoginMutation } from "./authApiSlice";
 import { Formik } from "formik";
+import usePersist from "../../hooks/usePersist";
 import NavBar from "../../components/NavBar";
 import Button from "../../components/UI/Button";
 
@@ -11,6 +12,7 @@ const Login = () => {
   const emailRef = useRef();
   const passRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const [persist, setPersist] = usePersist();
 
   useEffect(() => {
     emailRef.current.focus();
@@ -29,6 +31,10 @@ const Login = () => {
       </div>
     );
 
+  const handleToggle = () => {
+    setPersist(!persist);
+  };
+
   const content = (
     <Formik
       initialValues={{
@@ -45,7 +51,6 @@ const Login = () => {
         const { email, password } = values;
         try {
           const { token } = await login({ email, password }).unwrap();
-          console.log("Elo token: " + token);
           dispatch(setCredentials({ token }));
           navigate("/");
         } catch (err) {
@@ -94,6 +99,17 @@ const Login = () => {
             value={values.password}
             ref={passRef}
           />
+          <div className="flex flex-row gap-2 self-center">
+            <label htmlFor="persist" className="text-white">
+              Stay logged in
+            </label>
+            <input
+              type="checkbox"
+              name="persist"
+              checked={persist}
+              onChange={handleToggle}
+            />
+          </div>
           <Button
             className="bg-darkNavy w-min text-white font-bold rounded-xl text-xl self-center hover:bg-silver hover:text-darkNavy"
             type="submit"

@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const path = require("path");
@@ -12,6 +13,7 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes/root"));
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 app.use("/users", require("./routes/userRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
