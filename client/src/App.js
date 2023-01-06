@@ -17,22 +17,14 @@ const App = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Login />} />
-        <Route element={<PersistLogin />}>
-          <Route element={<Prefetch />}>
-            <Route path="exercises">
-              <Route index element={<Exercises />} />
-            </Route>
-            <Route path="history">
-              <Route index element={<TrainingHistory />} />
-            </Route>
-            <Route path="profile">
-              <Route index element={<Profile />} />
-            </Route>
-            <Route path="startWorkout">
-              <Route index element={<StartWorkout />} />
-            </Route>
-          </Route>
+        <Route path="exercises" element={<Exercises />} />
+        {/* <Route path="signup" element={<Login />} /> */}
+        <Route path="user" element={<PersistLogin />}>
+          {/* <Route element={<Prefetch />}> */}
+          <Route path="history" element={<TrainingHistory />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="startWorkout" element={<StartWorkout />} />
+          {/* </Route> */}
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

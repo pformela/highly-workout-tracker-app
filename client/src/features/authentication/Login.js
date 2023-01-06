@@ -99,6 +99,17 @@ const Login = () => {
             value={values.password}
             ref={passRef}
           />
+          <div className="flex flex-row gap-2 self-center">
+            <label htmlFor="persist" className="text-white">
+              Stay logged in
+            </label>
+            <input
+              type="checkbox"
+              name="persist"
+              checked={persist}
+              onChange={handleToggle}
+            />
+          </div>
           <Button
             className="bg-darkNavy w-min text-white font-bold rounded-xl text-xl self-center hover:bg-silver hover:text-darkNavy"
             type="submit"
@@ -106,15 +117,6 @@ const Login = () => {
           >
             Login
           </Button>
-          <label htmlFor="persist" className="">
-            Trust this device
-          </label>
-          <input
-            type="checkbox"
-            name="persist"
-            checked={persist}
-            onChange={handleToggle}
-          />
           <div className="text-white text-center mt-6">
             <Link to="/signup">Don't have an account? Sign up here.</Link>
           </div>

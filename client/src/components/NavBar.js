@@ -34,7 +34,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/startWorkout"
+          to="/user/startWorkout"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -44,7 +44,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/history"
+          to="/user/history"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -64,7 +64,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/profile"
+          to="/user/profile"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-2 py-2 rounded-md self-center hover:border-white border-transparent border-2"

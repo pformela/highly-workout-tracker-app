@@ -41,11 +41,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: "/auth/refresh",
         method: "GET",
+        credentials: "include",
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          const { token } = data;
+          const response = await queryFulfilled;
+          console.log(response);
+          const { token } = response.data;
           console.log("tokenik: " + token);
           dispatch(setCredentials({ token }));
         } catch (error) {
