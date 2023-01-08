@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import exerciseReducer from "../features/exercises/exercisesSlice";
 import authReducer from "../features/authentication/authSlice";
 import userReducer from "../features/user/userSlice";
+import folderReducer from "../features/workouts/folderSlice";
 import { apiSlice } from "./api/apiSlice";
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     exercise: exerciseReducer,
     auth: authReducer,
     user: userReducer,
+    folder: folderReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

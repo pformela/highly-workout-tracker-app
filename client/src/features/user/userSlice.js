@@ -23,4 +23,8 @@ const userSlice = createSlice({
 
 export const userActions = userSlice.actions;
 
+export const selectUsername = (state) => state.user.username;
+export const selectUserId = (state) => state.user.userId;
+export const selectEmail = (state) => state.user.email;
+
 export default userSlice.reducer;

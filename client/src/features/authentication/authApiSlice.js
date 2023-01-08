@@ -1,5 +1,6 @@
 import { apiSlice } from "../../app/api/apiSlice";
 import { logout, setCredentials } from "./authSlice";
+import { userActions } from "../user/userSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,8 +13,25 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log("data login: ");
-          console.log(data);
+          const { token, username, email, userId } = data;
+          dispatch(setCredentials({ token }));
+          dispatch(userActions.setUser({ username, userId, email }));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    register: builder.mutation({
+      query: (credentials) => ({
+        url: "/auth/register",
+        method: "POST",
+        body: { ...credentials },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { username, userId, email } = data;
+          dispatch(userActions.setUser({ username, userId, email }));
         } catch (error) {
           console.log(error);
         }
@@ -27,7 +45,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log("data logout: " + data);
           dispatch(logout());
           setTimeout(() => {
             dispatch(apiSlice.util.resetApiState());
@@ -46,10 +63,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const response = await queryFulfilled;
-          console.log(response);
-          const { token } = response.data;
-          console.log("tokenik: " + token);
+          const { token, username, email, userId } = response.data;
           dispatch(setCredentials({ token }));
+          dispatch(userActions.setUser({ username, email, userId }));
         } catch (error) {
           console.log(error);
         }
@@ -58,5 +74,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useSendLogoutMutation, useRefreshMutation } =
-  authApiSlice;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useSendLogoutMutation,
+  useRefreshMutation,
+} = authApiSlice;

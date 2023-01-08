@@ -20,6 +20,7 @@ const Profile = () => {
             <button
               className="bg-red-500 text-white text-xl rounded-xl p-2 mt-4 self-center"
               onClick={() => {}}
+              disabled={true}
             >
               Delete Account
             </button>

@@ -2,14 +2,16 @@ import { Outlet, Link } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { useRefreshMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
+import { userActions } from "../user/userSlice";
 import NavBar from "../../components/NavBar";
 
 const PersistLogin = () => {
   const [persist, setPersist] = usePersist();
   const token = useSelector(selectCurrentToken);
   const effectRan = useRef(false);
+  const dispatch = useDispatch();
 
   const [trueSuccess, setTrueSuccess] = useState(false);
 
@@ -21,7 +23,9 @@ const PersistLogin = () => {
       const verifyRefreshToken = async () => {
         console.log("verify refresh token");
         try {
-          await refresh();
+          const result = await refresh();
+          const { token, userId, username, email } = result.data;
+          dispatch(userActions.setUser({ userId, username, email }));
           setTrueSuccess(true);
         } catch (err) {
           console.log(err);
@@ -66,7 +70,6 @@ const PersistLogin = () => {
   } else if (token && isUninitialized) {
     // persist is true, token is defined
     console.log("token and uninit");
-    console.log(isUninitialized);
     content = <Outlet />;
   } else {
     content = (

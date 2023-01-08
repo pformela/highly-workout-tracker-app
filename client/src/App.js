@@ -10,6 +10,7 @@ import Login from "./features/authentication/Login";
 import PersistLogin from "./features/authentication/PersistLogin";
 import Prefetch from "./features/authentication/Prefetch";
 import Layout from "./components/Layout";
+import SignUp from "./features/authentication/SignUp";
 
 const App = () => {
   return (
@@ -17,8 +18,8 @@ const App = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="login" element={<Login />} />
+        <Route path="signup" element={<SignUp />} />
         <Route path="exercises" element={<Exercises />} />
-        {/* <Route path="signup" element={<Login />} /> */}
         <Route path="user" element={<PersistLogin />}>
           {/* <Route element={<Prefetch />}> */}
           <Route path="history" element={<TrainingHistory />} />
