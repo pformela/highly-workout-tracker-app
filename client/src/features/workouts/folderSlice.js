@@ -14,6 +14,8 @@ const folderSlice = createSlice({
       state.folders = action.payload;
     },
     addFolder(state, action) {
+      console.log("Adding new folder: ");
+      console.log(action.payload);
       state.folders.push(action.payload);
     },
   },

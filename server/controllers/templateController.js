@@ -15,9 +15,9 @@ const createTemplateFolder = asyncHandler(async (req, res) => {
   const result = await session
     .run(
       `
-    MATCH (u:User {username: "${username}"})-[:HAS]->(tf:TemplateFolders)
+    MATCH (u:User {username: "${username}"})
     CREATE (f:TemplateFolder {folder_id: "${folderId}", name: "${folderName}", username: "${username}", created_at: datetime()})
-    MERGE (f)-[:BELONGS_TO]->(tf)
+    MERGE (f)-[:BELONGS_TO]->(u)
     RETURN f
     `
     )
@@ -27,7 +27,7 @@ const createTemplateFolder = asyncHandler(async (req, res) => {
 
       session.close();
 
-      res.send({ folderId: folder_id, name, createdAt: created_at });
+      res.send({ folderId: folder_id, name, createdAt: created_at.toString() });
     })
     .catch((error) => {
       res.status(404).send("Error creating template folder");

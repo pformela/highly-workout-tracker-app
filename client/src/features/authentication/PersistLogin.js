@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
 import { userActions } from "../user/userSlice";
 import NavBar from "../../components/NavBar";
+import Loading from "../../components/UI/Loading";
 
 const PersistLogin = () => {
   const [persist, setPersist] = usePersist();
@@ -47,7 +48,7 @@ const PersistLogin = () => {
   } else if (isLoading) {
     // persist is true, token is undefined
     console.log("loading");
-    content = <div>Loading...</div>;
+    content = <Loading />;
   } else if (isError) {
     // persist is true, token is undefined
     console.log("error");
