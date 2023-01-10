@@ -12,9 +12,9 @@ router.route("/folders/templates").post(templateController.getFolderTemplates);
 
 router
   .route("/folder")
-  .get(templateController.getTemplateFolders)
   .post(templateController.createTemplate)
-  .delete(templateController.deleteTemplateFolder);
+  .delete(templateController.deleteTemplateFolder)
+  .put(templateController.updateTemplateFolder);
 
 router.route("/folder/template").get(templateController.getTemplateExercises);
 

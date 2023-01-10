@@ -49,6 +49,22 @@ export const folderApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    updateTemplateFolder: builder.mutation({
+      query: (parameters) => ({
+        url: "/templates/folder",
+        method: "PUT",
+        body: { ...parameters },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { folderId, newFolderName } = data;
+          dispatch(folderActions.updateFolder({ folderId, newFolderName }));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
     getFolderTemplates: builder.mutation({
       query: (parameters) => ({
         url: "/templates/folders/templates",
@@ -71,5 +87,6 @@ export const {
   useGetTemplateFoldersMutation,
   useCreateTemplateFolderMutation,
   useDeleteTemplateFolderMutation,
+  useUpdateTemplateFolderMutation,
   useGetFolderTemplatesMutation,
 } = folderApiSlice;

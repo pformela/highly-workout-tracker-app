@@ -89,6 +89,36 @@ const deleteTemplateFolder = asyncHandler(async (req, res) => {
     });
 });
 
+const updateTemplateFolder = asyncHandler(async (req, res) => {
+  const { folderId, folderName, username } = req.body;
+
+  const session = driver.session();
+
+  const result = await session
+    .run(
+      `
+    MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
+    SET f.name = "${folderName}"
+    RETURN f
+    `
+    )
+    .then((result) => {
+      const { folder_id, name, created_at } =
+        result.records[0]._fields[0].properties;
+
+      session.close();
+
+      res.send({
+        newFolderName: name,
+        folderId: folder_id,
+        createdAt: created_at.toString(),
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 const getFolderTemplates = asyncHandler(async (req, res) => {
   const { username, folderName, folderId } = req.body;
 
@@ -210,6 +240,7 @@ module.exports = {
   createTemplateFolder,
   getTemplateFolders,
   deleteTemplateFolder,
+  updateTemplateFolder,
   getFolderTemplates,
   getTemplateExercises,
   createTemplate,

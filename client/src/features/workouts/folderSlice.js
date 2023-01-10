@@ -15,6 +15,22 @@ const folderSlice = createSlice({
         (folder) => folder.folderId === action.payload
       )[0];
     },
+    addFolder(state, action) {
+      const folder = action.payload;
+      state.folders.unshift({ ...folder, isEmpty: true, templates: {} });
+    },
+    deleteFolder(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload
+      );
+      state.folders.splice(folderIndex, 1);
+    },
+    updateFolder(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload.folderId
+      );
+      state.folders[folderIndex].name = action.payload.newFolderName;
+    },
     setFolders(state, action) {
       state.folders = action.payload.map((folder) => {
         return {
@@ -23,16 +39,6 @@ const folderSlice = createSlice({
           templates: {},
         };
       });
-    },
-    deleteFolder(state, action) {
-      const folderIndex = state.folders.findIndex(
-        (folder) => folder.folderId === action.payload
-      );
-      state.folders.splice(folderIndex, 1);
-    },
-    addFolder(state, action) {
-      const folder = action.payload;
-      state.folders.unshift({ ...folder, isEmpty: true, templates: {} });
     },
     setTemplates(state, action) {
       const folderIndex = state.folders.findIndex(
