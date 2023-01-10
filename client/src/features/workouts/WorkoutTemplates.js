@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Folder from "./templates/Folder";
 import Button from "../../components/UI/Button";
 import Modal from "../../components/UI/Modal";
+import CreateNewFolder from "./CreateNewFolder";
 
 const WorkoutTemplates = () => {
   const [showAddFolder, setShowAddFolder] = useState(false);
@@ -11,7 +12,7 @@ const WorkoutTemplates = () => {
 
   return (
     <>
-      <div className="w-3/4 m-auto mt-6 flex flex-col gap-2">
+      <div className="w-3/4 m-auto mt-6 flex flex-col gap-3">
         <div className="flex flex-row justify-between border-solid border-b-2 mb-2 border-darkGray">
           <h2 className="text-silver text-3xl p-4">Templates</h2>
           <div className="flex flex-row gap-2">
@@ -30,7 +31,11 @@ const WorkoutTemplates = () => {
           <Folder key={folder.folderId} folder={folder} />
         ))}
       </div>
-      {showAddFolder && <Modal onClose={() => setShowAddFolder(false)} />}
+      {showAddFolder && (
+        <Modal>
+          <CreateNewFolder onClose={() => setShowAddFolder(false)} />
+        </Modal>
+      )}
     </>
   );
 };

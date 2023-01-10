@@ -7,12 +7,14 @@ router
   .get(templateController.getTemplateFolders)
   .post(templateController.createTemplateFolder);
 
-router.route("/getFolders").post(templateController.getTemplateFolders);
+router.route("/folders").post(templateController.getTemplateFolders);
+router.route("/folders/templates").post(templateController.getFolderTemplates);
 
 router
   .route("/folder")
-  .get(templateController.getFolderTemplates)
-  .post(templateController.createTemplate);
+  .get(templateController.getTemplateFolders)
+  .post(templateController.createTemplate)
+  .delete(templateController.deleteTemplateFolder);
 
 router.route("/folder/template").get(templateController.getTemplateExercises);
 

@@ -43,6 +43,7 @@ const getTemplateFolders = asyncHandler(async (req, res) => {
       `
     MATCH (u:User {username: "${username}"})<-[:BELONGS_TO]-(f:TemplateFolder)
     RETURN f
+    ORDER BY f.created_at DESC
     `
     )
     .then((result) => {
@@ -54,8 +55,6 @@ const getTemplateFolders = asyncHandler(async (req, res) => {
         };
       });
 
-      console.log(templateFolders);
-
       session.close();
 
       res.send(templateFolders);
@@ -65,33 +64,80 @@ const getTemplateFolders = asyncHandler(async (req, res) => {
     });
 });
 
-const getFolderTemplates = asyncHandler(async (req, res) => {
+const deleteTemplateFolder = asyncHandler(async (req, res) => {
   const { username, folderId } = req.body;
+  console.log("username " + username + " folderId " + folderId);
 
   const session = driver.session();
   const result = await session
     .run(
       `
-    MATCH (f:TemplateFolders {username: "${username}", folder_id: "${folderId}"})-[rel:CONTAINS]->(t:Template)
-    RETURN t, rel
+    MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
+    OPTIONAL MATCH (f)-[:CONTAINS]->(t:Template)
+    DETACH DELETE f, t
+    `
+    )
+    .then((result) => {
+      session.close();
+      console.log("Folder deleted");
+      console.log("folderID: " + folderId);
+
+      res.send({ folderId });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+const getFolderTemplates = asyncHandler(async (req, res) => {
+  const { username, folderName, folderId } = req.body;
+
+  const session = driver.session();
+  const result = await session
+    .run(
+      `
+    MATCH (f:TemplateFolder {username: "${username}", name: "${folderName}", folder_id: "${folderId}"})-[:CONTAINS]->(t:Template)<-[rel:IS_IN]-(ex:Exercise)
+    RETURN t, rel, ex
     `
     )
     .then((result) => {
       const folderTemplates = result.records.reduce((acc, record) => {
-        const { name } = record._fields[0].properties;
-        const templateId = record._fields[0].elementId;
+        console.log(acc);
+        const { name, template_id } = record._fields[0].properties;
+        const { sets, reps, weight } = record._fields[1].properties;
 
-        acc.push({
-          templateId,
-          name,
-        });
+        const exerciseName = record._fields[2].properties.name;
+        const exerciseId = record._fields[2].identity.low;
 
+        if (!acc.hasOwnProperty(template_id)) {
+          acc[template_id] = {
+            templateId: template_id.low,
+            name,
+            exercises: [
+              {
+                exerciseId,
+                exerciseName,
+                sets: sets.low,
+                reps: reps.low,
+                weight: weight.low,
+              },
+            ],
+          };
+        } else {
+          acc[template_id].exercises.push({
+            exerciseId,
+            exerciseName,
+            sets: sets.low,
+            reps: reps.low,
+            weight: weight.low,
+          });
+        }
         return acc;
-      });
+      }, {});
 
       session.close();
 
-      res.send(folderTemplates);
+      res.send({ folderId, templates: folderTemplates });
     })
     .catch((error) => {
       console.log(error);
@@ -163,6 +209,7 @@ const createTemplate = asyncHandler(async (req, res) => {
 module.exports = {
   createTemplateFolder,
   getTemplateFolders,
+  deleteTemplateFolder,
   getFolderTemplates,
   getTemplateExercises,
   createTemplate,

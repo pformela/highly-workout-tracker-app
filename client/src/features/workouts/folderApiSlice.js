@@ -5,14 +5,13 @@ export const folderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTemplateFolders: builder.mutation({
       query: (parameters) => ({
-        url: "/templates/getFolders",
+        url: "/templates/folders",
         method: "POST",
         body: { ...parameters },
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log(data);
           dispatch(folderActions.setFolders(data));
         } catch (error) {
           console.log(error);
@@ -29,7 +28,37 @@ export const folderApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           console.log(data);
-          dispatch(folderActions.addFolder(data));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    deleteTemplateFolder: builder.mutation({
+      query: (parameters) => ({
+        url: "/templates/folder",
+        method: "DELETE",
+        body: { ...parameters },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { folderId } = data;
+          dispatch(folderActions.deleteFolder(folderId));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    getFolderTemplates: builder.mutation({
+      query: (parameters) => ({
+        url: "/templates/folders/templates",
+        method: "POST",
+        body: { ...parameters },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(folderActions.setTemplates(data));
         } catch (error) {
           console.log(error);
         }
@@ -41,4 +70,6 @@ export const folderApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetTemplateFoldersMutation,
   useCreateTemplateFolderMutation,
+  useDeleteTemplateFolderMutation,
+  useGetFolderTemplatesMutation,
 } = folderApiSlice;

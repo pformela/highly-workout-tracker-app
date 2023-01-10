@@ -10,13 +10,42 @@ const folderSlice = createSlice({
   name: "folder",
   initialState: initialFolderState,
   reducers: {
+    getFolder(state, action) {
+      return state.folders.filter(
+        (folder) => folder.folderId === action.payload
+      )[0];
+    },
     setFolders(state, action) {
-      state.folders = action.payload;
+      state.folders = action.payload.map((folder) => {
+        return {
+          ...folder,
+          isEmpty: true,
+          templates: {},
+        };
+      });
+    },
+    deleteFolder(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload
+      );
+      state.folders.splice(folderIndex, 1);
     },
     addFolder(state, action) {
-      console.log("Adding new folder: ");
-      console.log(action.payload);
-      state.folders.push(action.payload);
+      const folder = action.payload;
+      state.folders.unshift({ ...folder, isEmpty: true, templates: {} });
+    },
+    setTemplates(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload.folderId
+      );
+
+      if (Object.keys(action.payload.templates).length === 0) {
+        state.folders[folderIndex].isEmpty = true;
+      } else {
+        state.folders[folderIndex].isEmpty = false;
+      }
+
+      state.folders[folderIndex].templates = action.payload.templates;
     },
   },
   extraReducers: (builder) => {
@@ -38,6 +67,16 @@ const folderSlice = createSlice({
         state.loading = false;
       })
       .addCase("folderApi/createTemplateFolder/rejected", (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase("folderApi/getFolderTemplates/pending", (state, action) => {
+        state.loading = true;
+      })
+      .addCase("folderApi/getFolderTemplates/fulfilled", (state, action) => {
+        state.loading = false;
+      })
+      .addCase("folderApi/getFolderTemplates/rejected", (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
