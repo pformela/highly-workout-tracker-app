@@ -181,7 +181,7 @@ const getTemplateExercises = asyncHandler(async (req, res) => {
   const result = await session
     .run(
       `
-    MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})-[rel:CONTAINS]->(ex:Exercise)
+    MATCH (f:Template {username: "${username}", folder_id: "${folderId}"})-[rel:CONTAINS]->(ex:Exercise)
     RETURN ex, rel
     `
     )
@@ -214,13 +214,26 @@ const getTemplateExercises = asyncHandler(async (req, res) => {
 const createTemplate = asyncHandler(async (req, res) => {
   const { username, folderId, name, exercises } = req.body;
 
+  const templateId = uuidv4();
+
   const session = driver.session();
   const result = await session
     .run(
       `
     MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
-    CREATE (t:Template {name: "${name}", username: "${username}"})
+    ${exercises.map((exercise) => {
+      return `
+        MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.name}"})
+        WHERE elementId(ex${exercise.exerciseId}) = ${exercise.exerciseId}
+      `;
+    })}
+    CREATE (t:Template {name: "${name}", username: "${username}", template_id: "${templateId}"})
     MERGE (t)-[:BELONGS_TO]->(f)
+    ${exercises.map((exercise) => {
+      return `
+        MERGE (t)<-[:IS_IN {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]-(ex${exercise.exerciseId})
+      `;
+    })}
     RETURN t
     `
     )

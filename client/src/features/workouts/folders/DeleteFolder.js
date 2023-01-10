@@ -1,5 +1,5 @@
 import React from "react";
-import { useDeleteTemplateFolderMutation } from "../folderApiSlice";
+import { useDeleteTemplateFolderMutation } from "./folderApiSlice";
 
 const DeleteFolder = ({ onClose, folderId, folderName, username }) => {
   const [deleteFolder] = useDeleteTemplateFolderMutation();

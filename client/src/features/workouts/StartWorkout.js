@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NavBar from "../../components/NavBar";
 import WorkoutTemplates from "./WorkoutTemplates";
-import { useGetTemplateFoldersMutation } from "./folderApiSlice";
-import { folderActions, selectFolders } from "./folderSlice";
+import { useGetTemplateFoldersMutation } from "./folders/folderApiSlice";
+import { folderActions, selectFolders } from "./folders/folderSlice";
 import { selectUsername } from "../user/userSlice";
 
 const StartWorkout = () => {

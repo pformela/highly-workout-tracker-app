@@ -15,6 +15,7 @@ module.exports = {
         darkGray: "#5d6771",
         navy: "#26303c",
         darkNavy: "#181b22",
+        blackRgba: "rgba(0, 0, 0, 0.9)",
       },
     },
   },

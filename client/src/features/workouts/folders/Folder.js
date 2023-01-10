@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useGetFolderTemplatesMutation } from "../folderApiSlice";
+import { useGetFolderTemplatesMutation } from "./folderApiSlice";
 import { useSelector } from "react-redux";
 import { selectUsername } from "../../user/userSlice";
 import Button from "../../../components/UI/Button";
@@ -63,7 +63,7 @@ const Folder = ({ folder }) => {
                 Show Templates
               </Button>
               <Button
-                className="flex flex-row bg-gray w-min h-10 px-4 self-center rounded-xl border-2 border-gray hover:border-white"
+                className="flex flex-row bg-blue-500 w-min h-10 px-4 self-center rounded-xl border-2 border-blue-500 hover:border-white"
                 onClick={() => setIsInEditMode(true)}
               >
                 <svg
@@ -104,7 +104,7 @@ const Folder = ({ folder }) => {
           </div>
           <div className={`${showTemplates ? "" : "hidden"} flex flex-row p-4`}>
             {folder.isEmpty && (
-              <h2 className="text-silver text-xl text-center w-full">
+              <h2 className="text-darkNavy text-xl text-center w-full">
                 Folder is empty
               </h2>
             )}

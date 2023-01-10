@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useUpdateTemplateFolderMutation } from "../folderApiSlice";
+import { useUpdateTemplateFolderMutation } from "./folderApiSlice";
 import Button from "../../../components/UI/Button";
 
 const UpdateFolder = ({ folderName, username, folderId, onClose }) => {

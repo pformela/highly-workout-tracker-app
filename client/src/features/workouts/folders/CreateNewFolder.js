@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useCreateTemplateFolderMutation } from "../../features/workouts/folderApiSlice";
-import { selectUsername } from "../../features/user/userSlice";
+import { useCreateTemplateFolderMutation } from "./folderApiSlice";
+import { selectUsername } from "../../user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { folderActions } from "../../features/workouts/folderSlice";
+import { folderActions } from "./folderSlice";
 
 const CreateNewFolder = (props) => {
   const [folderName, setFolderName] = useState("");
