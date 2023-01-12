@@ -173,6 +173,7 @@ const CreateNewTemplate = ({ onClose }) => {
         }).unwrap();
 
         console.log("Created template: " + name);
+        onClose();
       } catch (err) {
         console.log(err);
       }

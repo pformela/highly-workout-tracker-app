@@ -6,6 +6,7 @@ import Button from "../../../components/UI/Button";
 import Modal from "../../../components/UI/Modal";
 import DeleteFolder from "./DeleteFolder";
 import UpdateFolder from "./UpdateFolder";
+import ShortTemplateInfo from "../templates/ShortTemplateInfo";
 
 const Folder = ({ folder }) => {
   const [showTemplates, setShowTemplates] = useState(false);
@@ -30,7 +31,7 @@ const Folder = ({ folder }) => {
   };
 
   return (
-    <div className="flex flex-col bg-gray rounded-xl">
+    <div className="flex flex-col border-4 border-darkNavy rounded-xl">
       {isInEditMode ? (
         <UpdateFolder
           folderName={folder.name}
@@ -40,7 +41,7 @@ const Folder = ({ folder }) => {
         />
       ) : (
         <>
-          <div className="w-full bg-darkNavy rounded-xl flex flex-row justify-between ">
+          <div className="w-full bg-darkNavy rounded-md flex flex-row justify-between ">
             <h1 className="grow text-xl text-silver h-max w-max self-center font-bold pl-4">
               {folder.name}
             </h1>
@@ -108,23 +109,13 @@ const Folder = ({ folder }) => {
                 Folder is empty
               </h2>
             )}
-            {Object.keys(folder.templates).map((templateId) => (
-              <div key={templateId} className="flex flex-col">
-                <h1 className="text-silver text-xl font-bold">
-                  {folder.templates[templateId].name}
-                </h1>
-                {folder.templates[templateId].exercises.map((exercise) => (
-                  <div key={exercise.exerciseId} className="flex flex-row">
-                    <h1 className="text-silver text-md">
-                      {exercise.exerciseName}
-                    </h1>
-                    <h1 className="text-silver text-md">
-                      {exercise.sets} x {exercise.reps} x {exercise.weight}
-                    </h1>
-                  </div>
-                ))}
-              </div>
-            ))}
+            <ul className="flex flex-row flex-wrap">
+              {Object.keys(folder.templates).map((templateId) => (
+                <li key={templateId} className="flex flex-col">
+                  <ShortTemplateInfo template={folder.templates[templateId]} />
+                </li>
+              ))}
+            </ul>
           </div>
           {showDeleteTemplate && (
             <Modal>

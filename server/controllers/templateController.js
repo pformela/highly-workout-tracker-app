@@ -183,6 +183,7 @@ const getTemplateExercises = asyncHandler(async (req, res) => {
       `
     MATCH (t:Template {username: "${username}", template_id: "${templateId}"})-[rel:CONTAINS]->(ex:Exercise)
     RETURN ex, rel
+    ORDER BY t.created_at DESC
     `
     )
     .then((result) => {
@@ -225,21 +226,23 @@ const createTemplate = asyncHandler(async (req, res) => {
   const result = await session
     .run(
       `
-    MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
-    ${exercises.map((exercise) => {
-      return `
-        MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.exerciseName}"})
-        WHERE ID(ex${exercise.exerciseId}) = ${exercise.exerciseId}
-      `;
-    })}
-    CREATE (t:Template {name: "${name}", username: "${username}", template_id: "${templateId}"})
-    MERGE (t)-[:IS_IN_FOLDER]->(f)
-    ${exercises.map((exercise) => {
-      return `
-        MERGE (t)-[rel:CONTAINS {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]->(ex${exercise.exerciseId})
-      `;
-    })}
-    RETURN t
+    MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"}) 
+    ${exercises.reduce((prev, exercise) => {
+      return (
+        prev +
+        `MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.exerciseName}"})\n
+        WHERE ID(ex${exercise.exerciseId}) = ${exercise.exerciseId}\n`
+      );
+    }, "")}
+    CREATE (t:Template {name: "${name}", username: "${username}", template_id: "${templateId}", created_at: datetime()})
+    MERGE (t)-[:IS_IN_FOLDER]->(f) 
+    ${exercises.reduce((prev, exercise) => {
+      return (
+        prev +
+        `MERGE (t)-[:CONTAINS {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]->(ex${exercise.exerciseId})\n`
+      );
+    }, "")}
+    RETURN t 
     `
     )
     .then((result) => {
@@ -248,7 +251,7 @@ const createTemplate = asyncHandler(async (req, res) => {
       console.log("username: " + username);
       session.close();
 
-      // res.send({ name, username });
+      res.send({ name, username });
     })
     .catch((error) => {
       console.log(error);
