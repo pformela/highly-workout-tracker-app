@@ -22,7 +22,7 @@ const getExercises = asyncHandler(async (req, res) => {
         muscle ? ":" + muscle : ""
       }${difficulty ? ":" + difficulty : ""}) 
             WHERE ex.name CONTAINS "${name}" 
-            RETURN ex 
+            RETURN ex, id(ex) AS exerciseId
             SKIP ${offset} LIMIT 25`
     )
     .then((exerciseResult) => {
@@ -38,9 +38,14 @@ const getExercises = asyncHandler(async (req, res) => {
                 RETURN count(ex) as count`
         )
         .then((countResult) => {
+          console.log(exerciseResult.records[0]._fields[1].low);
           res.send({
             result: exerciseResult.records.map((r) => {
-              return { ...r.get("ex").properties, labels: r.get("ex").labels };
+              return {
+                ...r.get("ex").properties,
+                labels: r.get("ex").labels,
+                exerciseId: r._fields[1].low,
+              };
             }),
             count: countResult.records[0].get("count").low,
           });

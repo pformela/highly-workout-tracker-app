@@ -20,7 +20,7 @@ export const folderApiSlice = apiSlice.injectEndpoints({
     }),
     createTemplateFolder: builder.mutation({
       query: (parameters) => ({
-        url: "/templates",
+        url: "/templates/folder",
         method: "POST",
         body: { ...parameters },
       }),

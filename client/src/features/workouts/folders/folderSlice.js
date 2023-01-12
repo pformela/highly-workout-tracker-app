@@ -53,6 +53,14 @@ const folderSlice = createSlice({
 
       state.folders[folderIndex].templates = action.payload.templates;
     },
+    addTemplate(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload.folderId
+      );
+      state.folders[folderIndex].isEmpty = false;
+      state.folders[folderIndex].templates[action.payload.templateId] =
+        action.payload.template;
+    },
   },
   extraReducers: (builder) => {
     builder

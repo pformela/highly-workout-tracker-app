@@ -44,7 +44,7 @@ const Exercises = () => {
           muscle={MUSCLE}
           difficulty={DIFFICULTY}
         />
-        <FoundExercises />
+        <FoundExercises pick={false} />
       </div>
     </div>
   );

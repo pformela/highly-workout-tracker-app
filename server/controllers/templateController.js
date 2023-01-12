@@ -126,7 +126,7 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
   const result = await session
     .run(
       `
-    MATCH (f:TemplateFolder {username: "${username}", name: "${folderName}", folder_id: "${folderId}"})-[:CONTAINS]->(t:Template)<-[rel:IS_IN]-(ex:Exercise)
+    MATCH (f:TemplateFolder {username: "${username}", name: "${folderName}", folder_id: "${folderId}"})<-[:IS_IN_FOLDER]-(t:Template)-[rel:CONTAINS]-(ex:Exercise)
     RETURN t, rel, ex
     `
     )
@@ -175,13 +175,13 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
 });
 
 const getTemplateExercises = asyncHandler(async (req, res) => {
-  const { username, folderId } = req.body;
+  const { username, templateId } = req.body;
 
   const session = driver.session();
   const result = await session
     .run(
       `
-    MATCH (f:Template {username: "${username}", folder_id: "${folderId}"})-[rel:CONTAINS]->(ex:Exercise)
+    MATCH (t:Template {username: "${username}", template_id: "${templateId}"})-[rel:CONTAINS]->(ex:Exercise)
     RETURN ex, rel
     `
     )
@@ -213,6 +213,11 @@ const getTemplateExercises = asyncHandler(async (req, res) => {
 
 const createTemplate = asyncHandler(async (req, res) => {
   const { username, folderId, name, exercises } = req.body;
+  console.log("exercises");
+  console.log(exercises);
+  console.log("username: " + username);
+  console.log("folderId: " + folderId);
+  console.log("name: " + name);
 
   const templateId = uuidv4();
 
@@ -223,15 +228,15 @@ const createTemplate = asyncHandler(async (req, res) => {
     MATCH (f:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
     ${exercises.map((exercise) => {
       return `
-        MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.name}"})
-        WHERE elementId(ex${exercise.exerciseId}) = ${exercise.exerciseId}
+        MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.exerciseName}"})
+        WHERE ID(ex${exercise.exerciseId}) = ${exercise.exerciseId}
       `;
     })}
     CREATE (t:Template {name: "${name}", username: "${username}", template_id: "${templateId}"})
-    MERGE (t)-[:BELONGS_TO]->(f)
+    MERGE (t)-[:IS_IN_FOLDER]->(f)
     ${exercises.map((exercise) => {
       return `
-        MERGE (t)<-[:IS_IN {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]-(ex${exercise.exerciseId})
+        MERGE (t)-[rel:CONTAINS {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]->(ex${exercise.exerciseId})
       `;
     })}
     RETURN t
@@ -239,12 +244,14 @@ const createTemplate = asyncHandler(async (req, res) => {
     )
     .then((result) => {
       const { name, username } = result.records[0]._fields[0].properties;
-
+      console.log("name: " + name);
+      console.log("username: " + username);
       session.close();
 
-      res.send({ name, username });
+      // res.send({ name, username });
     })
     .catch((error) => {
+      console.log(error);
       res.status(404).send("Error creating template");
     });
 });

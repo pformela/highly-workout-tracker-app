@@ -4,15 +4,15 @@ const templateController = require("../controllers/templateController");
 
 router
   .route("/")
-  .get(templateController.getTemplateFolders)
-  .post(templateController.createTemplateFolder);
+  .get(templateController.getTemplateExercises)
+  .post(templateController.createTemplate);
 
 router.route("/folders").post(templateController.getTemplateFolders);
 router.route("/folders/templates").post(templateController.getFolderTemplates);
 
 router
   .route("/folder")
-  .post(templateController.createTemplate)
+  .post(templateController.createTemplateFolder)
   .delete(templateController.deleteTemplateFolder)
   .put(templateController.updateTemplateFolder);
 

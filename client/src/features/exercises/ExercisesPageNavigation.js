@@ -22,7 +22,7 @@ const ExercisesPageNavigation = ({
         }}
         disabled={currentPage === 1}
       >
-        First Page
+        First
       </button>
       <button
         className="bg-darkNavy text-white text-bold px-4 py-1 rounded-xl flex flex-col justify-center items-center gap-2 w-fit"
@@ -34,7 +34,7 @@ const ExercisesPageNavigation = ({
         }}
         disabled={currentPage === 1}
       >
-        Previous Page
+        Previous
       </button>
       <div className="text-white self-center">
         Page {currentPage} of {Math.ceil(count / 25)}
@@ -48,7 +48,7 @@ const ExercisesPageNavigation = ({
           }
         }}
       >
-        Next Page
+        Next
       </button>
       <button
         className="bg-darkNavy text-white text-bold px-4 py-1 rounded-xl flex flex-col justify-center items-center gap-2 w-fit"
@@ -64,7 +64,7 @@ const ExercisesPageNavigation = ({
           }
         }}
       >
-        Last Page
+        Last
       </button>
     </div>
   );
