@@ -18,7 +18,43 @@ export const templateApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    updateTemplate: builder.mutation({
+      query: (parameters) => ({
+        url: "/templates",
+        method: "PUT",
+        body: { ...parameters },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const {
+            oldFolderId,
+            oldFolderName,
+            newFolderId,
+            newFolderName,
+            templateId,
+          } = data;
+          if (oldFolderId !== newFolderId) {
+            dispatch(
+              folderActions.deleteTemplate({
+                folderId: oldFolderId,
+                templateId,
+              })
+            );
+            dispatch(
+              folderActions.addTemplate({
+                folderId: newFolderId,
+                templateId,
+              })
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useCreateTemplateMutation } = templateApiSlice;
+export const { useCreateTemplateMutation, useUpdateTemplateMutation } =
+  templateApiSlice;

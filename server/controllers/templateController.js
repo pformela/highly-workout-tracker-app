@@ -128,11 +128,11 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
       `
     MATCH (f:TemplateFolder {username: "${username}", name: "${folderName}", folder_id: "${folderId}"})<-[:IS_IN_FOLDER]-(t:Template)-[rel:CONTAINS]-(ex:Exercise)
     RETURN t, rel, ex
+    ORDER BY t.created_at DESC
     `
     )
     .then((result) => {
       const folderTemplates = result.records.reduce((acc, record) => {
-        console.log(acc);
         const { name, template_id } = record._fields[0].properties;
         const { sets, reps, weight } = record._fields[1].properties;
 
@@ -214,11 +214,6 @@ const getTemplateExercises = asyncHandler(async (req, res) => {
 
 const createTemplate = asyncHandler(async (req, res) => {
   const { username, folderId, name, exercises } = req.body;
-  console.log("exercises");
-  console.log(exercises);
-  console.log("username: " + username);
-  console.log("folderId: " + folderId);
-  console.log("name: " + name);
 
   const templateId = uuidv4();
 
@@ -247,8 +242,7 @@ const createTemplate = asyncHandler(async (req, res) => {
     )
     .then((result) => {
       const { name, username } = result.records[0]._fields[0].properties;
-      console.log("name: " + name);
-      console.log("username: " + username);
+      console.log("Created template: " + name);
       session.close();
 
       res.send({ name, username });
@@ -256,6 +250,85 @@ const createTemplate = asyncHandler(async (req, res) => {
     .catch((error) => {
       console.log(error);
       res.status(404).send("Error creating template");
+    });
+});
+
+const updateTemplate = asyncHandler(async (req, res) => {
+  const { username, folderId, templateId, name, exercises } = req.body;
+
+  console.log("username: " + username);
+  console.log("folderId: " + folderId);
+  console.log("templateId: " + templateId);
+  console.log("name: " + name);
+
+  let oldFolderId;
+  let oldFolderName;
+  let newFolderId;
+  let newFolderName;
+
+  const deleteSession = driver.session();
+  const deleteResult = await deleteSession
+    .run(
+      `
+    MATCH (t:Template {username: "${username}", template_id: "${templateId}"})-[rel:CONTAINS]->(ex:Exercise)
+    MATCH (f:TemplateFolder {username: "${username}"})<-[is_in:IS_IN_FOLDER]-(t)
+    DELETE rel, is_in
+    RETURN f.name as oldFolderName, f.folder_id as oldFolderId
+    `
+    )
+    .then((result) => {
+      oldFolderName = result.records[0]._fields[0];
+      oldFolderId = result.records[0]._fields[1];
+      console.log("Deleted relationships for: " + name);
+      deleteSession.close();
+
+      const updateSession = driver.session();
+      const updateResult = updateSession
+        .run(
+          `
+          MATCH (t:Template {username: "${username}", template_id: "${templateId}"})
+          MATCH (fCurr:TemplateFolder {username: "${username}", folder_id: "${folderId}"})
+          ${exercises.reduce((prev, exercise) => {
+            return (
+              prev +
+              `MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.exerciseName}"})\n
+              WHERE ID(ex${exercise.exerciseId}) = ${exercise.exerciseId}\n`
+            );
+          }, "")}
+            ${exercises.reduce((prev, exercise) => {
+              return (
+                prev +
+                `CREATE (t)-[:CONTAINS {sets: ${exercise.sets}, reps: ${exercise.reps}, weight: ${exercise.weight}}]->(ex${exercise.exerciseId})\n`
+              );
+            }, "")}
+              CREATE (t)-[:IS_IN_FOLDER]->(fCurr)
+              SET t.name = "${name}"
+          RETURN fCurr.name as newFolderName, fCurr.folder_id as newFolderId
+            `
+        )
+        .then((result) => {
+          newFolderName = result.records[0]._fields[0];
+          newFolderId = result.records[0]._fields[1];
+          console.log("old folder id: " + oldFolderId);
+          console.log("new folder id: " + newFolderId);
+          updateSession.close();
+
+          res.send({
+            oldFolderId,
+            oldFolderName,
+            newFolderId,
+            newFolderName,
+            templateId,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(404).send("Error updating template");
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(404).send("Error updating template");
     });
 });
 
@@ -267,4 +340,5 @@ module.exports = {
   getFolderTemplates,
   getTemplateExercises,
   createTemplate,
+  updateTemplate,
 };

@@ -35,7 +35,7 @@ const StartWorkout = () => {
   }, []);
 
   return (
-    <div className="bg-navy min-h-screen">
+    <div className="bg-navy min-h-screen pb-16">
       <NavBar />
       <h1 className="text-5xl text-bold text-white mt-6 text-center">
         Start Workout

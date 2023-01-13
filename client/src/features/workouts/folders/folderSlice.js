@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialFolderState = {
   folders: [],
+  currentTemplate: {},
   loading: false,
   error: "",
 };
@@ -53,13 +54,25 @@ const folderSlice = createSlice({
 
       state.folders[folderIndex].templates = action.payload.templates;
     },
+    deleteTemplate(state, action) {
+      const folderIndex = state.folders.findIndex(
+        (folder) => folder.folderId === action.payload.folderId
+      );
+      state.currentTemplate =
+        state.folders[folderIndex].templates[action.payload.templateId];
+      delete state.folders[folderIndex].templates[action.payload.templateId];
+      if (Object.keys(state.folders[folderIndex].templates).length === 0) {
+        state.folders[folderIndex].isEmpty = true;
+      }
+    },
     addTemplate(state, action) {
       const folderIndex = state.folders.findIndex(
         (folder) => folder.folderId === action.payload.folderId
       );
-      state.folders[folderIndex].isEmpty = false;
       state.folders[folderIndex].templates[action.payload.templateId] =
-        action.payload.template;
+        state.currentTemplate;
+      state.folders[folderIndex].isEmpty = false;
+      state.currentTemplate = {};
     },
   },
   extraReducers: (builder) => {

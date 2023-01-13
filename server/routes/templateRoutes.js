@@ -5,7 +5,8 @@ const templateController = require("../controllers/templateController");
 router
   .route("/")
   .get(templateController.getTemplateExercises)
-  .post(templateController.createTemplate);
+  .post(templateController.createTemplate)
+  .put(templateController.updateTemplate);
 
 router.route("/folders").post(templateController.getTemplateFolders);
 router.route("/folders/templates").post(templateController.getFolderTemplates);

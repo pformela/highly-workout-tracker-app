@@ -24,14 +24,13 @@ const Folder = ({ folder }) => {
         folderName: folder.name,
         username,
       });
-      console.log(result.data);
     } catch (err) {
       console.log(err);
     }
   };
 
   return (
-    <div className="flex flex-col border-4 border-darkNavy rounded-xl">
+    <div className="flex flex-col border-4 border-darkNavy bg-darkGray rounded-xl">
       {isInEditMode ? (
         <UpdateFolder
           folderName={folder.name}
@@ -105,14 +104,18 @@ const Folder = ({ folder }) => {
           </div>
           <div className={`${showTemplates ? "" : "hidden"} flex flex-row p-4`}>
             {folder.isEmpty && (
-              <h2 className="text-darkNavy text-xl text-center w-full">
+              <h2 className="text-darkNavy text-xl text-center w-max">
                 Folder is empty
               </h2>
             )}
-            <ul className="flex flex-row flex-wrap">
-              {Object.keys(folder.templates).map((templateId) => (
+            <ul className="flex flex-row flex-wrap gap-6 justify-center">
+              {Object.keys(folder.templates).map((templateId, index) => (
                 <li key={templateId} className="flex flex-col">
-                  <ShortTemplateInfo template={folder.templates[templateId]} />
+                  <ShortTemplateInfo
+                    template={folder.templates[templateId]}
+                    folderId={folder.folderId}
+                    templateId={templateId}
+                  />
                 </li>
               ))}
             </ul>
