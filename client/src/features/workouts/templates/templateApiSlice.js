@@ -18,6 +18,27 @@ export const templateApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    deleteTemplate: builder.mutation({
+      query: (parameters) => ({
+        url: "/templates",
+        method: "DELETE",
+        body: { ...parameters },
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { folderId, templateId } = data;
+          dispatch(
+            folderActions.deleteTemplate({
+              folderId,
+              templateId,
+            })
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
     updateTemplate: builder.mutation({
       query: (parameters) => ({
         url: "/templates",
@@ -56,5 +77,8 @@ export const templateApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateTemplateMutation, useUpdateTemplateMutation } =
-  templateApiSlice;
+export const {
+  useCreateTemplateMutation,
+  useUpdateTemplateMutation,
+  useDeleteTemplateMutation,
+} = templateApiSlice;

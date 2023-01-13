@@ -6,7 +6,8 @@ router
   .route("/")
   .get(templateController.getTemplateExercises)
   .post(templateController.createTemplate)
-  .put(templateController.updateTemplate);
+  .put(templateController.updateTemplate)
+  .delete(templateController.deleteTemplate);
 
 router.route("/folders").post(templateController.getTemplateFolders);
 router.route("/folders/templates").post(templateController.getFolderTemplates);

@@ -332,6 +332,30 @@ const updateTemplate = asyncHandler(async (req, res) => {
     });
 });
 
+const deleteTemplate = asyncHandler(async (req, res) => {
+  const { username, templateId, folderId } = req.body;
+
+  const session = driver.session();
+  const result = await session
+    .run(
+      `
+    MATCH (t:Template {username: "${username}", template_id: "${templateId}"})-[rel:CONTAINS]->(ex:Exercise)
+    DETACH DELETE t
+    RETURN t
+    `
+    )
+    .then((result) => {
+      console.log("Deleted template: " + templateId);
+      session.close();
+
+      res.send({ templateId, folderId });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(404).send("Error deleting template");
+    });
+});
+
 module.exports = {
   createTemplateFolder,
   getTemplateFolders,
@@ -341,4 +365,5 @@ module.exports = {
   getTemplateExercises,
   createTemplate,
   updateTemplate,
+  deleteTemplate,
 };

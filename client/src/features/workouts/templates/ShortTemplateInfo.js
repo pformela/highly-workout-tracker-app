@@ -6,19 +6,24 @@ import { useSelector } from "react-redux";
 import { selectUsername } from "../../user/userSlice";
 import { useUpdateTemplateMutation } from "./templateApiSlice";
 import { useGetFolderTemplatesMutation } from "../folders/folderApiSlice";
+import DeleteTemplate from "./DeleteTemplate";
 
 const ShortTemplateInfo = ({ template, templateId, folderId }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const reMenu = new RegExp(
+  const re = new RegExp(
     `.*dropdown.*|.*dropdownCollapseButton.*|.*dropdownButton.*`
   );
 
   document.addEventListener("click", (e) => {
-    if (!e.target.className.match(reMenu)) {
-      setShowDropdown(false);
+    try {
+      if (!e.target.className.match(re)) {
+        setShowDropdown(false);
+      }
+    } catch (err) {
+      console.log(err);
     }
   });
 
@@ -51,6 +56,14 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
           className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
           onClick={() => {
             setShowDropdown(false);
+          }}
+        >
+          Show more info
+        </Button>
+        <Button
+          className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
+          onClick={() => {
+            setShowDropdown(false);
             setShowUpdateModal(true);
           }}
         >
@@ -58,7 +71,10 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
         </Button>
         <Button
           className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => setShowDropdown(false)}
+          onClick={() => {
+            setShowDropdown(false);
+            setShowDeleteModal(true);
+          }}
         >
           Delete template
         </Button>
@@ -147,6 +163,16 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
           {showDropdown && dropdownContent}
         </div>
       </div>
+      {showDeleteModal && (
+        <Modal>
+          <DeleteTemplate
+            folderId={folderId}
+            templateId={templateId}
+            templateName={template.name}
+            onClose={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
       {showUpdateModal && (
         <Modal>
           <TemplateForm
