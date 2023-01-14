@@ -52,6 +52,9 @@ const folderSlice = createSlice({
         state.folders[folderIndex].isEmpty = false;
       }
 
+      console.log("templates");
+      console.log(action.payload.templates);
+
       state.folders[folderIndex].templates = action.payload.templates;
     },
     deleteTemplate(state, action) {

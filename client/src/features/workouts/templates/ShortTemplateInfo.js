@@ -7,10 +7,12 @@ import { selectUsername } from "../../user/userSlice";
 import { useUpdateTemplateMutation } from "./templateApiSlice";
 import { useGetFolderTemplatesMutation } from "../folders/folderApiSlice";
 import DeleteTemplate from "./DeleteTemplate";
+import TemplateInfo from "./TemplateInfo";
 
 const ShortTemplateInfo = ({ template, templateId, folderId }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showMoreInfoModal, setShowMoreInfoModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const re = new RegExp(
@@ -56,6 +58,7 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
           className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
           onClick={() => {
             setShowDropdown(false);
+            setShowMoreInfoModal(true);
           }}
         >
           Show more info
@@ -163,6 +166,17 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
           {showDropdown && dropdownContent}
         </div>
       </div>
+      {showMoreInfoModal && (
+        <Modal>
+          <TemplateInfo
+            template={template}
+            templateId={templateId}
+            onClose={() => {
+              setShowMoreInfoModal(false);
+            }}
+          />
+        </Modal>
+      )}
       {showDeleteModal && (
         <Modal>
           <DeleteTemplate

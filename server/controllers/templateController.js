@@ -137,6 +137,8 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
         const { sets, reps, weight } = record._fields[1].properties;
 
         const exerciseName = record._fields[2].properties.name;
+        const exerciseEquipment = record._fields[2].properties.equipment;
+        const exerciseInstructions = record._fields[2].properties.instructions;
         const exerciseId = record._fields[2].identity.low;
 
         if (!acc.hasOwnProperty(template_id)) {
@@ -145,6 +147,8 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
             name,
             exercises: [
               {
+                exerciseEquipment,
+                exerciseInstructions,
                 exerciseId,
                 exerciseName,
                 sets: sets.low,
@@ -156,6 +160,8 @@ const getFolderTemplates = asyncHandler(async (req, res) => {
         } else {
           acc[template_id].exercises.push({
             exerciseId,
+            exerciseEquipment,
+            exerciseInstructions,
             exerciseName,
             sets: sets.low,
             reps: reps.low,
