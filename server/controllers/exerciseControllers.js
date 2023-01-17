@@ -21,7 +21,9 @@ const getExercises = asyncHandler(async (req, res) => {
             MATCH (ex:Exercise${type ? ":" + type : ""}${
         muscle ? ":" + muscle : ""
       }${difficulty ? ":" + difficulty : ""}) 
-            WHERE ex.name CONTAINS "${name}" 
+            ${
+              name.trim().length > 0 ? `WHERE ex.name =~ '(?i).*${name}.*'` : ""
+            } 
             RETURN ex, id(ex) AS exerciseId
             SKIP ${offset} LIMIT 25`
     )
@@ -34,10 +36,14 @@ const getExercises = asyncHandler(async (req, res) => {
                 MATCH (ex:Exercise${type ? ":" + type : ""}${
             muscle ? ":" + muscle : ""
           }${difficulty ? ":" + difficulty : ""}) 
-                WHERE ex.name CONTAINS "${name}" 
+          ${name.trim().length > 0 ? `WHERE ex.name =~ '(?i).*${name}.*'` : ""} 
                 RETURN count(ex) as count`
         )
         .then((countResult) => {
+          if (exerciseResult.records.length === 0) {
+            res.send({ result: [], count: 0 });
+            return;
+          }
           console.log(exerciseResult.records[0]._fields[1].low);
           res.send({
             result: exerciseResult.records.map((r) => {

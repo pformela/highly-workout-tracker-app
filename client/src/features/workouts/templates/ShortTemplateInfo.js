@@ -8,12 +8,15 @@ import { useUpdateTemplateMutation } from "./templateApiSlice";
 import { useGetFolderTemplatesMutation } from "../folders/folderApiSlice";
 import DeleteTemplate from "./DeleteTemplate";
 import TemplateInfo from "./TemplateInfo";
+import { useNavigate } from "react-router-dom";
 
 const ShortTemplateInfo = ({ template, templateId, folderId }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showMoreInfoModal, setShowMoreInfoModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const re = new RegExp(
     `.*dropdown.*|.*dropdownCollapseButton.*|.*dropdownButton.*`
@@ -50,7 +53,10 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
       >
         <Button
           className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => setShowDropdown(false)}
+          onClick={() => {
+            setShowDropdown(false);
+            navigate(`/user/startWorkout/${folderId}/${templateId}`);
+          }}
         >
           Start Workout
         </Button>

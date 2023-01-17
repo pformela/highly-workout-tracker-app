@@ -114,6 +114,14 @@ const folderSlice = createSlice({
 });
 
 export const selectFolders = (state) => state.folder.folders;
+export const selectTemplate = (state, folderId, templateId) => {
+  const selectedFolder = state.folder.folders.filter(
+    (folder) => folder.folderId === folderId
+  )[0];
+  if (!selectedFolder) {
+    return {};
+  } else return selectedFolder.templates[templateId];
+};
 
 export const folderActions = folderSlice.actions;
 

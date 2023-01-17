@@ -8,6 +8,7 @@ import Profile from "./features/user/Profile";
 import StartWorkout from "./features/workouts/StartWorkout";
 import Login from "./features/authentication/Login";
 import PersistLogin from "./features/authentication/PersistLogin";
+import Workout from "./features/workouts/Workout";
 import Prefetch from "./features/authentication/Prefetch";
 import Layout from "./components/Layout";
 import SignUp from "./features/authentication/SignUp";
@@ -24,7 +25,10 @@ const App = () => {
           {/* <Route element={<Prefetch />}> */}
           <Route path="history" element={<TrainingHistory />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="startWorkout" element={<StartWorkout />} />
+          <Route path="startWorkout">
+            <Route index element={<StartWorkout />} />
+            <Route path=":folderId/:templateId" element={<Workout />} />
+          </Route>
           {/* </Route> */}
         </Route>
       </Route>
