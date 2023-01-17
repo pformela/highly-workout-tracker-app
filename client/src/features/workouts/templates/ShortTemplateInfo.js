@@ -28,7 +28,7 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
         setShowDropdown(false);
       }
     } catch (err) {
-      console.log(err);
+      // console.log("brr");
     }
   });
 
