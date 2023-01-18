@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import CancelWorkoutModal from "./CancelWorkoutModal";
 import FinishWorkoutModal from "./FinishWorkoutModal";
 import ExerciseMoreInfoModal from "../exercises/ExerciseMoreInfoModal";
+import { useAddWorkoutToHistoryMutation } from "./workoutApiSlice";
 
 const Workout = () => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
@@ -71,6 +72,8 @@ const Workout = () => {
     return () => clearInterval(timer);
   }, [seconds]);
 
+  const [addWorkoutToHistory] = useAddWorkoutToHistoryMutation();
+
   const handleInputChange = (e, exerciseIndex, setIndex, type) => {
     const newExercises = [...exercises];
     newExercises[exerciseIndex].sets[setIndex][type] = e.target.value;
@@ -92,7 +95,7 @@ const Workout = () => {
     setFinishing(true);
   };
 
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = async () => {
     const newExercises = JSON.parse(JSON.stringify(exercises));
 
     const finalExercises = newExercises.map((exercise) => {
@@ -113,8 +116,8 @@ const Workout = () => {
 
     const workout = {
       username,
-      templateId,
-      folderId,
+      userWeight: 90,
+      templateName: template.name,
       exercises: finalExercises,
       duration: {
         hours,
@@ -122,6 +125,14 @@ const Workout = () => {
         seconds,
       },
     };
+
+    try {
+      const result = await addWorkoutToHistory(workout);
+      console.log("result");
+      console.log(result);
+    } catch (err) {
+      console.log(err);
+    }
 
     console.log(workout);
   };

@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { useRefreshMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
@@ -7,12 +7,15 @@ import { selectCurrentToken } from "./authSlice";
 import { userActions } from "../user/userSlice";
 import NavBar from "../../components/NavBar";
 import Loading from "../../components/UI/Loading";
+import Login from "./Login";
 
 const PersistLogin = () => {
   const [persist, setPersist] = usePersist();
   const token = useSelector(selectCurrentToken);
   const effectRan = useRef(false);
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const [trueSuccess, setTrueSuccess] = useState(false);
 
@@ -24,8 +27,8 @@ const PersistLogin = () => {
       const verifyRefreshToken = async () => {
         console.log("verify refresh token");
         try {
-          const result = await refresh();
-          const { token, userId, username, email } = result.data;
+          const { data } = await refresh();
+          const { userId, username, email } = data;
           dispatch(userActions.setUser({ userId, username, email }));
           setTrueSuccess(true);
         } catch (err) {
@@ -53,15 +56,9 @@ const PersistLogin = () => {
     // persist is true, token is undefined
     console.log("error");
     content = (
-      <div className="min-h-screen bg-navy">
+      <div className="bg-navy min-h-screen">
         <NavBar />
-        <div className="text-2xl text-center text-white text-bold m-6">
-          Something went wrong
-        </div>
-
-        <div className="text-xl text-center text-gray text-bold">
-          <Link to="/login">Click here to login again</Link>
-        </div>
+        <Login />
       </div>
     );
   } else if (isSuccess && trueSuccess) {
@@ -74,15 +71,9 @@ const PersistLogin = () => {
     content = <Outlet />;
   } else {
     content = (
-      <div className="min-h-screen bg-navy">
+      <div className="bg-navy min-h-screen">
         <NavBar />
-        <div className="text-2xl text-center text-white text-bold m-6">
-          Something went wrong
-        </div>
-
-        <div className="text-xl text-center text-gray text-bold">
-          <Link to="/login">Click here to login again</Link>
-        </div>
+        <Login />
       </div>
     );
   }

@@ -9,9 +9,9 @@ const PageNotFound = () => {
       <NavBar />
       <div className="mt-12 flex flex-col justify-center gap-6">
         <h1 className="self-center text-6xl">Page Not Found</h1>
-        <Link to="/" className="self-center">
+        <Link to="/startWorkout" className="self-center">
           <Button className="bg-gray text-3xl font-bold">
-            Go to Home Page
+            Go to Main Page
           </Button>
         </Link>
       </div>

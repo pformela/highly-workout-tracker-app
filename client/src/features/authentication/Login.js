@@ -57,7 +57,7 @@ const Login = () => {
           dispatch(setCredentials({ token }));
           dispatch(userActions.setUser({ email, username, userId }));
 
-          navigate("/");
+          navigate("/startWorkout");
         } catch (err) {
           if (!err.status) {
             setErrMsg("No server response.");
@@ -131,12 +131,7 @@ const Login = () => {
     </Formik>
   );
 
-  return (
-    <div className="bg-navy min-h-screen">
-      <NavBar />
-      {content}
-    </div>
-  );
+  return content;
 };
 
 export default Login;

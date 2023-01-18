@@ -175,8 +175,6 @@ const refresh = (req, res) => {
 
   const refreshToken = cookies.jwt;
 
-  console.log("refresh token: " + refreshToken);
-
   jwt.verify(
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
@@ -184,7 +182,6 @@ const refresh = (req, res) => {
       if (err) {
         return res.status(403).send("Forbidden");
       }
-      console.log(decoded.username);
       const userSession = driver.session();
       const userResult = await userSession
         .run(

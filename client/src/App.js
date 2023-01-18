@@ -12,26 +12,24 @@ import Workout from "./features/workouts/Workout";
 import Prefetch from "./features/authentication/Prefetch";
 import Layout from "./components/Layout";
 import SignUp from "./features/authentication/SignUp";
+import LoginComponent from "./features/authentication/LoginComponent";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<SignUp />} />
+      <Route path="/" element={<PersistLogin />}>
+        {/* <Route element={<Prefetch />}> */}
         <Route path="exercises" element={<Exercises />} />
-        <Route path="user" element={<PersistLogin />}>
-          {/* <Route element={<Prefetch />}> */}
-          <Route path="history" element={<TrainingHistory />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="startWorkout">
-            <Route index element={<StartWorkout />} />
-            <Route path=":folderId/:templateId" element={<Workout />} />
-          </Route>
-          {/* </Route> */}
+        <Route path="history" element={<TrainingHistory />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="startWorkout">
+          <Route index element={<StartWorkout />} />
+          <Route path=":folderId/:templateId" element={<Workout />} />
         </Route>
+        {/* </Route> */}
       </Route>
+      <Route path="/login" element={<LoginComponent />} />
+      <Route path="/signup" element={<SignUp />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

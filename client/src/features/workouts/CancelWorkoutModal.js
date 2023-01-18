@@ -28,7 +28,7 @@ const CancelWorkoutModal = ({ onClose }) => {
         <button
           className="text-white text-xl text-center bg-red-500 px-6 py-2 rounded-md font-bold border-2 border-red-500 hover:border-white"
           onClick={() => {
-            navigate("/user/startWorkout");
+            navigate("/startWorkout");
           }}
         >
           Cancel

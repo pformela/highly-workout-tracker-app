@@ -55,7 +55,7 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
           className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
           onClick={() => {
             setShowDropdown(false);
-            navigate(`/user/startWorkout/${folderId}/${templateId}`);
+            navigate(`/startWorkout/${folderId}/${templateId}`);
           }}
         >
           Start Workout

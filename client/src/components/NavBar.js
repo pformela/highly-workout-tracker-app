@@ -24,17 +24,7 @@ const NavBar = () => {
           <img className="h-16" src={whiteLogo} alt="logo" />
         </NavLink>
         <NavLink
-          to="/"
-          className={({ isActive }) =>
-            (isActive ? "bg-white text-black" : "") +
-            " px-4 py-2 rounded-md self-center outline-none hover:border-white border-transparent border-2"
-          }
-        >
-          Home
-        </NavLink>
-
-        <NavLink
-          to="/user/startWorkout"
+          to="/startWorkout"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -44,7 +34,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/user/history"
+          to="/history"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"
@@ -64,7 +54,7 @@ const NavBar = () => {
         </NavLink>
 
         <NavLink
-          to="/user/profile"
+          to="/profile"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-2 py-2 rounded-md self-center hover:border-white border-transparent border-2"
