@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../../components/UI/Button";
 import Modal from "../../../components/UI/Modal";
 import TemplateForm from "./TemplateForm";
 import { useSelector } from "react-redux";

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectUsername } from "../user/userSlice";
 import Modal from "../../components/UI/Modal";
 import DeleteWorkoutModal from "./DeleteWorkoutModal";
+import { workoutActions } from "../workouts/workoutSlice";
 import {
   useDeleteWorkoutMutation,
   useGetWorkoutsMutation,
@@ -16,6 +18,7 @@ const Training = ({ workout, workoutId, index }) => {
   const navigate = useNavigate();
 
   const [deleteWorkout, { isLoading }] = useDeleteWorkoutMutation();
+  const dispatch = useDispatch();
 
   const username = useSelector(selectUsername);
 
@@ -30,12 +33,33 @@ const Training = ({ workout, workoutId, index }) => {
     setShowDeleteWorkoutModal(false);
   };
 
+  const prepareForUpdate = () => {
+    const newWorkout = {
+      workoutId: workout.workoutId,
+      name: workout.templateName,
+      duration: workout.duration,
+      exercises: Object.keys(workout.exercises).map((key) => {
+        return {
+          exerciseId: key,
+          instructions: workout.exercises[key].exerciseInstructions,
+          exerciseEquipment: workout.exercises[key].exerciseEquipment,
+          exerciseName: workout.exercises[key].exerciseName,
+          sets: workout.exercises[key].sets,
+        };
+      }),
+    };
+
+    dispatch(workoutActions.setCurrentWorkoutTemplate(newWorkout));
+  };
+
   const dropdownContent = (
     <div className="">
       <select
         className="bg-navy rounded-md px-2 py-1 text-gray active:text-white"
         onChange={(e) => {
           if (e.target.value === "Edit workout") {
+            prepareForUpdate();
+            navigate(`/history/edit/${workoutId}`);
           } else if (e.target.value === "Share workout") {
             setShowShareWorkoutModal(true);
           } else if (e.target.value === "Delete workout") {

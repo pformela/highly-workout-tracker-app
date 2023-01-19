@@ -17,10 +17,19 @@ const App = () => {
       <Route element={<PersistLogin />}>
         <Route path="/">
           <Route index element={<StartWorkout />} />
-          <Route path="/:folderId/:templateId" element={<Workout />} />
+          <Route
+            path="/:folderId/:templateId"
+            element={<Workout isTemplate={true} />}
+          />
         </Route>
         <Route path="/exercises" element={<Exercises />} />
-        <Route path="/history" element={<TrainingHistory />} />
+        <Route path="/history">
+          <Route index element={<TrainingHistory />} />
+          <Route
+            path="edit/:workoutId"
+            element={<Workout isTemplate={false} />}
+          />
+        </Route>
         <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="/shared/:username/:workoutId" element={<SharedWorkout />} />

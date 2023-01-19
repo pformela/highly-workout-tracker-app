@@ -42,6 +42,9 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
             exercises: {
               [exerciseId]: {
                 exerciseName: record._fields[2].properties.name,
+                exerciseId: record._fields[2].identity.low,
+                exerciseEquipment: record._fields[2].properties.equipment,
+                exerciseInstructions: record._fields[2].properties.instructions,
                 bestSet: {
                   reps: bestSetReps,
                   weight: bestSetWeight,
@@ -61,6 +64,9 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
         ) {
           acc[workoutId].exercises[exerciseId] = {
             exerciseName: record._fields[2].properties.name,
+            exerciseId: record._fields[2].identity.low,
+            exerciseEquipment: record._fields[2].properties.equipment,
+            exerciseInstructions: record._fields[2].properties.instructions,
             bestSet: {
               reps: bestSetReps,
               weight: bestSetWeight,
@@ -262,6 +268,9 @@ const getSingleWorkout = asyncHandler(async (req, res) => {
             exercises: {
               [exerciseId]: {
                 exerciseName: record._fields[2].properties.name,
+                exerciseId: record._fields[2].identity.low,
+                exerciseEquipment: record._fields[2].properties.equipment,
+                exerciseInstructions: record._fields[2].properties.instructions,
                 bestSet: {
                   reps: bestSetReps,
                   weight: bestSetWeight,
@@ -281,6 +290,9 @@ const getSingleWorkout = asyncHandler(async (req, res) => {
         ) {
           acc[workoutId].exercises[exerciseId] = {
             exerciseName: record._fields[2].properties.name,
+            exerciseId: record._fields[2].identity.low,
+            exerciseEquipment: record._fields[2].properties.equipment,
+            exerciseInstructions: record._fields[2].properties.instructions,
             bestSet: {
               reps: bestSetReps,
               weight: bestSetWeight,

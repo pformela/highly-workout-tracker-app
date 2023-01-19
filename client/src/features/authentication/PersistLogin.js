@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, Navigate } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { useRefreshMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
@@ -57,12 +57,7 @@ const PersistLogin = () => {
     // persist is true, token is undefined
     console.log(token);
     console.log("error");
-    content = (
-      <div className="bg-navy min-h-screen">
-        <NavBar />
-        <Login />
-      </div>
-    );
+    content = <Navigate to="/login" replace={true} />;
   } else if (isSuccess && trueSuccess) {
     // persist is true, token is defined
     console.log("success");
@@ -72,12 +67,7 @@ const PersistLogin = () => {
     console.log("token and uninit");
     content = <Outlet />;
   } else {
-    content = (
-      <div className="bg-navy min-h-screen">
-        <NavBar />
-        <Login />
-      </div>
-    );
+    content = <Navigate to="/login" replace={true} />;
   }
 
   return content;

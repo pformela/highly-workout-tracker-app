@@ -45,6 +45,7 @@ const workoutSlice = createSlice({
         const dayOfMonth = date.split(" ")[2];
 
         history[w]["formattedDate"] = `${day}, ${month} ${dayOfMonth}`;
+        history[w].workoutId = w;
 
         return { ...acc, [w]: history[w] };
       }, {});
@@ -53,7 +54,6 @@ const workoutSlice = createSlice({
         state.isWorkoutHistoryEmpty = true;
     },
     deleteWorkout(state, action) {
-      console.log(action.payload.workoutId);
       delete state.workoutHistory[action.payload];
     },
     setCurrentWorkoutTemplate(state, action) {
@@ -80,6 +80,7 @@ const workoutSlice = createSlice({
   },
 });
 
+export const selectWorkout = (state) => state.workouts.currentWorkout;
 export const selectWorkoutHistory = (state) => state.workouts.workoutHistory;
 export const selectCurrentSharedWorkout = (state) =>
   state.workouts.currentSharedWorkout;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { selectTemplate } from "./folders/folderSlice";
+import { selectWorkout } from "./workoutSlice";
 import { selectUsername } from "../../features/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -15,47 +16,18 @@ import {
   useGetWorkoutsMutation,
 } from "./workoutApiSlice";
 
-const Workout = () => {
+const Workout = ({ isTemplate }) => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
   const [showFinishWorkoutModal, setShowFinishWorkoutModal] = useState(false);
   const [showExerciseMoreInfoModal, setShowExerciseMoreInfoModal] =
     useState(false);
   const [exerciseMoreInfo, setExerciseMoreInfo] = useState({});
   const [finishing, setFinishing] = useState(false);
-  const { folderId, templateId } = useParams();
+  const { folderId, templateId, workoutId } = useParams();
 
   const navigate = useNavigate();
 
   const username = useSelector(selectUsername);
-
-  const template = useSelector((state) =>
-    selectTemplate(state, folderId, templateId)
-  );
-
-  const [exercises, setExercises] = useState(
-    JSON.parse(JSON.stringify(template.exercises))
-      .reverse()
-      .map((e) => {
-        const sets = {};
-
-        for (let i = 0; i < e.sets; i++) {
-          sets[i + 1] = {
-            reps: e.reps,
-            weight: e.weight,
-            isDone: false,
-          };
-        }
-
-        return {
-          exerciseName: e.exerciseName,
-          instructions: e.exerciseInstructions,
-          equipment: e.exerciseEquipment,
-          exerciseId: e.exerciseId,
-          isDone: false,
-          sets,
-        };
-      })
-  );
 
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -77,29 +49,47 @@ const Workout = () => {
     return () => clearInterval(timer);
   }, [seconds]);
 
+  const template = useSelector((state) =>
+    isTemplate
+      ? selectTemplate(state, folderId, templateId)
+      : selectWorkout(state)
+  );
+
+  const [exercises, setExercises] = useState(
+    isTemplate
+      ? JSON.parse(JSON.stringify(template.exercises))
+          .reverse()
+          .map((e) => {
+            const sets = {};
+
+            for (let i = 0; i < e.sets; i++) {
+              sets[i + 1] = {
+                reps: e.reps,
+                weight: e.weight,
+                isDone: false,
+              };
+            }
+
+            return {
+              exerciseName: e.exerciseName,
+              instructions: e.exerciseInstructions,
+              equipment: e.exerciseEquipment,
+              exerciseId: e.exerciseId,
+              isDone: false,
+              sets,
+            };
+          })
+      : JSON.parse(JSON.stringify(template.exercises)).map((e) => {
+          e.isDone = true;
+          e.sets.map((set) => {
+            set.isDone = true;
+          });
+          return e;
+        })
+  );
+
   const [addWorkoutToHistory] = useAddWorkoutToHistoryMutation();
   const [getWorkouts] = useGetWorkoutsMutation();
-
-  const handleInputChange = (e, exerciseIndex, setIndex, type) => {
-    const newExercises = [...exercises];
-    newExercises[exerciseIndex].sets[setIndex][type] = e.target.value;
-    setExercises(newExercises);
-  };
-
-  const handleIsDoneSet = (exerciseIndex, setIndex) => {
-    const newExercises = [...exercises];
-    const currState = newExercises[exerciseIndex].sets[setIndex].isDone;
-    newExercises[exerciseIndex].sets[setIndex].isDone = !currState;
-    const currExerciseState = Object.values(
-      newExercises[exerciseIndex].sets
-    ).every((set) => set.isDone);
-    newExercises[exerciseIndex].isDone = currExerciseState;
-    setExercises(newExercises);
-  };
-
-  const handlePrepareFinishWorkout = () => {
-    setFinishing(true);
-  };
 
   const handleFinishWorkout = async () => {
     const newExercises = JSON.parse(JSON.stringify(exercises));
@@ -125,25 +115,45 @@ const Workout = () => {
       userWeight: 90,
       templateName: template.name,
       exercises: finalExercises,
-      duration: {
-        hours,
-        minutes,
-        seconds,
-      },
+      duration: isTemplate
+        ? {
+            hours,
+            minutes,
+            seconds,
+          }
+        : template.duration,
     };
 
-    try {
-      const result = await addWorkoutToHistory(workout);
-      await getWorkouts({ username });
-    } catch (err) {
-      console.log(err);
+    if (isTemplate) {
+      try {
+        const result = await addWorkoutToHistory(workout);
+        await getWorkouts({ username });
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      console.log("update me plz");
     }
 
     console.log(workout);
     navigate("/history");
   };
+  const handleInputChange = (e, exerciseIndex, setIndex, type) => {
+    const newExercises = [...exercises];
+    newExercises[exerciseIndex].sets[setIndex][type] = e.target.value;
+    setExercises(newExercises);
+  };
 
-  const dispatch = useDispatch();
+  const handleIsDoneSet = (exerciseIndex, setIndex) => {
+    const newExercises = [...exercises];
+    const currState = newExercises[exerciseIndex].sets[setIndex].isDone;
+    newExercises[exerciseIndex].sets[setIndex].isDone = !currState;
+    const currExerciseState = Object.values(
+      newExercises[exerciseIndex].sets
+    ).every((set) => set.isDone);
+    newExercises[exerciseIndex].isDone = currExerciseState;
+    setExercises(newExercises);
+  };
 
   if (!template) {
     return (
@@ -156,7 +166,7 @@ const Workout = () => {
 
   return (
     <div className="bg-navy min-h-screen pb-6">
-      {showCancelWorkoutModal && (
+      {showCancelWorkoutModal && isTemplate && (
         <Modal>
           <CancelWorkoutModal
             onClose={() => {
@@ -165,7 +175,7 @@ const Workout = () => {
           />
         </Modal>
       )}
-      {showFinishWorkoutModal && (
+      {showFinishWorkoutModal && isTemplate && (
         <Modal>
           <FinishWorkoutModal
             onClose={() => {
@@ -187,11 +197,27 @@ const Workout = () => {
       <div className="flex flex-col m-auto w-max border-2 bg-darkNavy border-darkNavy rounded-xl p-4 px-6 mt-6 gap-4">
         <div className="flex flex-row w-full self-center justify-between">
           <h1 className="text-4xl font-bold text-white">{template.name}</h1>
-          <h1 className="text-4xl font-bold text-white">
-            {minutes < 10 ? `0${hours}` : hours}:
-            {minutes < 10 ? `0${minutes}` : minutes}:
-            {seconds < 10 ? `0${seconds}` : seconds}
-          </h1>
+          {isTemplate ? (
+            <h1 className="text-4xl font-bold text-white">
+              {minutes < 10 ? `0${hours}` : hours}:
+              {minutes < 10 ? `0${minutes}` : minutes}:
+              {seconds < 10 ? `0${seconds}` : seconds}
+            </h1>
+          ) : (
+            <h1 className="text-4xl font-bold text-white">
+              {template.duration.minutes < 10
+                ? `0${template.duration.hours}`
+                : template.duration.hours}
+              :
+              {template.duration.minutes < 10
+                ? `0${template.duration.minutes}`
+                : template.duration.minutes}
+              :
+              {template.duration.seconds < 10
+                ? `0${template.duration.seconds}`
+                : template.duration.seconds}
+            </h1>
+          )}
         </div>
         <form
           className="bg-lighterDarkNavy rounded-xl p-4 w-max m-auto"
@@ -248,6 +274,7 @@ const Workout = () => {
                             {set}
                           </li>
                           <input
+                            key={`i_number${exIndex}${index}`}
                             className={`text-center text-xl w-20 font-bold px-2 py-1 rounded-md ${
                               exercise.sets[set].isDone
                                 ? "bg-greenRgba2 text-white"
@@ -267,6 +294,7 @@ const Workout = () => {
                             }
                           />
                           <input
+                            key={`i2_number${exIndex}${index}`}
                             className={`text-center text-xl w-16 font-bold px-2 py-1 rounded-md ${
                               exercise.sets[set].isDone
                                 ? "bg-greenRgba2 text-white"
@@ -286,6 +314,7 @@ const Workout = () => {
                             }
                           />
                           <button
+                            key={`b_number${exIndex}${index}`}
                             className={`rounded-md border-2 px-2 ${
                               exercise.sets[set].isDone
                                 ? "bg-greenRgba border-greenRgba hover:border-white"
@@ -318,25 +347,51 @@ const Workout = () => {
               </ul>
             ))}
             <div className="flex flex-row gap-2 justify-center">
-              <button
-                className="bg-red-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-red-500 hover:border-white"
-                type="button"
-                onClick={() => {
-                  setShowCancelWorkoutModal(true);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-blue-500 hover:border-white"
-                type="button"
-                onClick={() => {
-                  setShowFinishWorkoutModal(true);
-                  setFinishing(true);
-                }}
-              >
-                Finish
-              </button>
+              {isTemplate ? (
+                <>
+                  <button
+                    className="bg-red-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-red-500 hover:border-white"
+                    type="button"
+                    onClick={() => {
+                      setShowCancelWorkoutModal(true);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-blue-500 hover:border-white"
+                    type="button"
+                    onClick={() => {
+                      setShowFinishWorkoutModal(true);
+                      setFinishing(true);
+                    }}
+                  >
+                    Finish
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="bg-red-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-red-500 hover:border-white"
+                    type="button"
+                    onClick={() => {
+                      navigate("/history");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-500 text-white font-bold text-xl rounded-xl px-12 py-2 border-2 border-green-500 hover:border-white"
+                    type="button"
+                    onClick={() => {
+                      setFinishing(true);
+                      handleFinishWorkout();
+                    }}
+                  >
+                    Update
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </form>
