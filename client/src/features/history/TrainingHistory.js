@@ -7,6 +7,7 @@ import {
 } from "../workouts/workoutSlice";
 import { useSelector } from "react-redux";
 import NavBar from "../../components/NavBar";
+import Training from "./Training";
 
 const TrainingHistory = () => {
   const [getWorkouts, { data, error, isLoading }] = useGetWorkoutsMutation();
@@ -24,17 +25,31 @@ const TrainingHistory = () => {
 
   useEffect(() => {
     if (JSON.stringify(workouts) === "{}" && !isEmpty) fetchWorkouts();
+    window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy pb-6">
       <NavBar />
-      <h1 className="text-center text-white text-6xl mt-6">Training History</h1>
-      <div className="flex flex-col gap-2 bg-mediumDarkNavy">
-        {Object.keys(workouts).map((workoutId) => {
-          <h1>{workoutId}</h1>;
+      <h1 className="text-5xl text-bold text-white mt-6 text-center">
+        Training History
+      </h1>
+      <ul className="flex flex-col mt-6 gap-4 bg-lighterDarkNavy p-4 w-3/5 m-auto text-black rounded-xl border-4 border-darkNavy">
+        {Object.keys(workouts).map((workoutId, index) => {
+          return (
+            <li
+              key={index}
+              className="flex flex-col bg-darkNavy gap-1 p-4 rounded-xl"
+            >
+              <Training
+                workout={workouts[workoutId]}
+                workoutId={workoutId}
+                index={index}
+              />
+            </li>
+          );
         })}
-      </div>
+      </ul>
     </div>
   );
 };

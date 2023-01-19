@@ -57,7 +57,7 @@ const Login = () => {
           dispatch(setCredentials({ token }));
           dispatch(userActions.setUser({ email, username, userId }));
 
-          navigate("/startWorkout");
+          navigate("/");
         } catch (err) {
           if (!err.status) {
             setErrMsg("No server response.");

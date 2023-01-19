@@ -31,6 +31,7 @@ const StartWorkout = () => {
     if (templateFolders?.length === 0 || !templateFolders) {
       getFolderTemplates();
     }
+    window.scrollTo(0, 0);
     // eslint-disable-next-line
   }, []);
 

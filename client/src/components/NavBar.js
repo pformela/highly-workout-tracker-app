@@ -24,7 +24,7 @@ const NavBar = () => {
           <img className="h-16" src={whiteLogo} alt="logo" />
         </NavLink>
         <NavLink
-          to="/startWorkout"
+          to="/"
           className={({ isActive }) =>
             (isActive ? "bg-white text-black" : "") +
             " px-4 py-2 rounded-md self-center hover:border-white border-transparent border-2"

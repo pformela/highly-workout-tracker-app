@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { selectTemplate } from "./folders/folderSlice";
 import { selectUsername } from "../../features/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/NavBar";
 import WorkoutExerciseTableHeader from "./WorkoutExerciseTableHeader";
 import Modal from "../../components/UI/Modal";
@@ -9,7 +10,10 @@ import { useParams } from "react-router-dom";
 import CancelWorkoutModal from "./CancelWorkoutModal";
 import FinishWorkoutModal from "./FinishWorkoutModal";
 import ExerciseMoreInfoModal from "../exercises/ExerciseMoreInfoModal";
-import { useAddWorkoutToHistoryMutation } from "./workoutApiSlice";
+import {
+  useAddWorkoutToHistoryMutation,
+  useGetWorkoutsMutation,
+} from "./workoutApiSlice";
 
 const Workout = () => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
@@ -19,6 +23,8 @@ const Workout = () => {
   const [exerciseMoreInfo, setExerciseMoreInfo] = useState({});
   const [finishing, setFinishing] = useState(false);
   const { folderId, templateId } = useParams();
+
+  const navigate = useNavigate();
 
   const username = useSelector(selectUsername);
 
@@ -68,11 +74,11 @@ const Workout = () => {
         setHours(hours + 1);
       }
     }, 1000);
-
     return () => clearInterval(timer);
   }, [seconds]);
 
   const [addWorkoutToHistory] = useAddWorkoutToHistoryMutation();
+  const [getWorkouts] = useGetWorkoutsMutation();
 
   const handleInputChange = (e, exerciseIndex, setIndex, type) => {
     const newExercises = [...exercises];
@@ -128,13 +134,13 @@ const Workout = () => {
 
     try {
       const result = await addWorkoutToHistory(workout);
-      console.log("result");
-      console.log(result);
+      await getWorkouts({ username });
     } catch (err) {
       console.log(err);
     }
 
     console.log(workout);
+    navigate("/history");
   };
 
   const dispatch = useDispatch();
@@ -226,7 +232,7 @@ const Workout = () => {
                     .sort()
                     .map((set, index) => {
                       return (
-                        <div
+                        <ul
                           className={`flex flex-row p-2 rounded-xl gap-2 ${
                             exercise.sets[set].isDone ? "bg-greenRgba" : ""
                           }`}
@@ -305,7 +311,7 @@ const Workout = () => {
                               />
                             </svg>
                           </button>
-                        </div>
+                        </ul>
                       );
                     })}
                 </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import NavBar from "../../components/NavBar";
 import ExerciseSearchForm from "./ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
@@ -35,9 +35,16 @@ export const MUSCLE = [
 export const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
 
 const Exercises = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-navy">
       <NavBar />
+      <h1 className="text-5xl text-bold text-white mt-6 text-center">
+        Exercises
+      </h1>
       <div>
         <ExerciseSearchForm
           types={TYPES}

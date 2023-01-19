@@ -22,19 +22,20 @@ const PersistLogin = () => {
   const [refresh, { isUninitialized, isLoading, isSuccess, isError, error }] =
     useRefreshMutation();
 
+  const verifyRefreshToken = async () => {
+    console.log("verify refresh token");
+    try {
+      const { data } = await refresh();
+      const { userId, username, email } = data;
+      dispatch(userActions.setUser({ userId, username, email }));
+      setTrueSuccess(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     if (effectRan.current || process.env.NODE_ENV === "development") {
-      const verifyRefreshToken = async () => {
-        console.log("verify refresh token");
-        try {
-          const { data } = await refresh();
-          const { userId, username, email } = data;
-          dispatch(userActions.setUser({ userId, username, email }));
-          setTrueSuccess(true);
-        } catch (err) {
-          console.log(err);
-        }
-      };
       if (!token && persist) {
         verifyRefreshToken();
       }
@@ -54,6 +55,7 @@ const PersistLogin = () => {
     content = <Loading />;
   } else if (isError) {
     // persist is true, token is undefined
+    console.log(token);
     console.log("error");
     content = (
       <div className="bg-navy min-h-screen">

@@ -1,8 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { revertAll } from "../../app/store";
+
+const initialState = {
+  token: null,
+  isAuthenticated: false,
+};
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: { token: null, isAuthenticated: false },
+  initialState,
   reducers: {
     setCredentials: (state, action) => {
       const { token } = action.payload;
@@ -14,6 +20,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
   },
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
 });
 
 export const { setCredentials, logout } = authSlice.actions;

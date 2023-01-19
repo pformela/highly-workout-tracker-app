@@ -11,26 +11,11 @@ import TemplateInfo from "./TemplateInfo";
 import { useNavigate } from "react-router-dom";
 
 const ShortTemplateInfo = ({ template, templateId, folderId }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showMoreInfoModal, setShowMoreInfoModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const navigate = useNavigate();
-
-  const re = new RegExp(
-    `.*dropdown.*|.*dropdownCollapseButton.*|.*dropdownButton.*`
-  );
-
-  document.addEventListener("click", (e) => {
-    try {
-      if (!e.target.className.match(re)) {
-        setShowDropdown(false);
-      }
-    } catch (err) {
-      // console.log("brr");
-    }
-  });
 
   const exerciseContent = template.exercises.reduce((acc, exercise, index) => {
     if (index === 0) {
@@ -43,51 +28,27 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
   }, "");
 
   const dropdownContent = (
-    <div
-      id="dropdown"
-      className="dropdown absolute bottom-16 z-10 bg-white divide-y divide-gray-100 rounded-xl shadow w-40 bg-white border-2 border-white"
-    >
-      <ul
-        className="flex flex-col py-1 text-sm dark:text-gray-200"
-        aria-labelledby="dropdownDefaultButton"
-      >
-        <Button
-          className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => {
-            setShowDropdown(false);
-            navigate(`/startWorkout/${folderId}/${templateId}`);
-          }}
-        >
-          Start Workout
-        </Button>
-        <Button
-          className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => {
-            setShowDropdown(false);
+    <div className="">
+      <select
+        className="bg-navy rounded-md px-2 py-1 text-gray active:text-white"
+        onChange={(e) => {
+          if (e.target.value === "Start Workout") {
+            navigate(`/${folderId}/${templateId}`);
+          } else if (e.target.value === "Show more info") {
             setShowMoreInfoModal(true);
-          }}
-        >
-          Show more info
-        </Button>
-        <Button
-          className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => {
-            setShowDropdown(false);
+          } else if (e.target.value === "Update template") {
             setShowUpdateModal(true);
-          }}
-        >
-          Update template
-        </Button>
-        <Button
-          className="dropdownButton block px-4 py-2 font-bold text-darkNavy hover:bg-darkNavy hover:text-white"
-          onClick={() => {
-            setShowDropdown(false);
+          } else if (e.target.value === "Delete template") {
             setShowDeleteModal(true);
-          }}
-        >
-          Delete template
-        </Button>
-      </ul>
+          }
+        }}
+      >
+        <option isdisabled="true">Select an action</option>
+        <option>Start Workout</option>
+        <option>Show more info</option>
+        <option>Update template</option>
+        <option>Delete template</option>
+      </select>
     </div>
   );
 
@@ -161,15 +122,8 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
               : exerciseContent}
           </div>
         </div>
-        <div className="relative flex flex-row self-end p-4">
-          <Button
-            id="dropdownCollapseButton"
-            className="dropdownCollapseButton border-2 border-white hover:bg-white hover:text-darkNavy"
-            onClick={() => setShowDropdown((prev) => !prev)}
-          >
-            ●●●
-          </Button>
-          {showDropdown && dropdownContent}
+        <div className="relative flex flex-row p-4 self-center">
+          {dropdownContent}
         </div>
       </div>
       {showMoreInfoModal && (

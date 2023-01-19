@@ -1,7 +1,8 @@
+import { revertAll } from "../../app/store";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialExerciseState = {
+const initialState = {
   exercises: [],
   count: 0,
   loading: false,
@@ -25,17 +26,10 @@ export const fetchExercises = createAsyncThunk(
 
 const exerciseSlice = createSlice({
   name: "exercise",
-  initialState: initialExerciseState,
-  reducers: {
-    clearExercises(state) {
-      state.exercises = [];
-      state.count = 0;
-      state.loading = false;
-      state.error = "";
-      state.filter = {};
-    },
-  },
+  initialState,
+  reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(revertAll, () => initialState);
     builder.addCase(fetchExercises.pending, (state, action) => {
       state.loading = true;
     });

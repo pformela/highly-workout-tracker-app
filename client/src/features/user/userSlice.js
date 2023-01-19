@@ -1,12 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { revertAll } from "../../app/store";
+
+const initialState = {
+  userId: "",
+  email: "",
+  username: "",
+};
 
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    userId: "",
-    email: "",
-    username: "",
-  },
+  initialState,
   reducers: {
     setUser(state, action) {
       state.userId = action.payload.userId;
@@ -19,6 +22,7 @@ const userSlice = createSlice({
       state.username = "";
     },
   },
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
 });
 
 export const userActions = userSlice.actions;

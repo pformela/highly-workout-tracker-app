@@ -16,17 +16,22 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
       `
     MATCH (u:User {username: "${username}"})-[:COMMITED_WORKOUT]->(w:Workout)
     MATCH (w)-[set:COMMITED_SET_OF]->(ex:Exercise)
-    RETURN w, set, ex
+    MATCH (w)-[best_set:BEST_SET]->(ex)
+    RETURN w, set, ex, best_set
     ORDER BY w.created_at DESC
     `
     )
     .then((result) => {
       const workouts = result.records.reduce((acc, record) => {
         const workoutId = record._fields[0].properties.workout_id;
+        const templateName = record._fields[0].properties.template_name;
         const exerciseId = record._fields[2].identity.low;
+        const bestSetReps = record._fields[3].properties.reps.low;
+        const bestSetWeight = record._fields[3].properties.weight.low;
 
         if (!(workoutId in acc)) {
           acc[workoutId] = {
+            templateName,
             duration: {
               hours: record._fields[0].properties.hours.low,
               minutes: record._fields[0].properties.minutes.low,
@@ -37,6 +42,10 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
             exercises: {
               [exerciseId]: {
                 exerciseName: record._fields[2].properties.name,
+                bestSet: {
+                  reps: bestSetReps,
+                  weight: bestSetWeight,
+                },
                 sets: [
                   {
                     reps: record._fields[1].properties.reps.low,
@@ -52,6 +61,10 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
         ) {
           acc[workoutId].exercises[exerciseId] = {
             exerciseName: record._fields[2].properties.name,
+            bestSet: {
+              reps: bestSetReps,
+              weight: bestSetWeight,
+            },
             sets: [
               {
                 reps: record._fields[1].properties.reps.low,
@@ -108,8 +121,6 @@ const createWorkout = asyncHandler(async (req, res) => {
     );
     return { ...acc, [exercise.exerciseId]: bestSet };
   }, {});
-
-  console.log(bestSets);
 
   const session = driver.session();
   const result = await session
@@ -181,7 +192,6 @@ const createWorkout = asyncHandler(async (req, res) => {
       `
     )
     .then((result) => {
-      console.log(result);
       const workouts = result.records.map((workout) => {
         return workout._fields[0].properties;
       });
@@ -196,7 +206,115 @@ const createWorkout = asyncHandler(async (req, res) => {
     });
 });
 
+const deleteWorkout = asyncHandler(async (req, res) => {
+  const { workoutId } = req.body;
+
+  const session = driver.session();
+  const result = await session
+    .run(
+      `
+      MATCH (workout:Workout {workout_id: "${workoutId}"})
+      DETACH DELETE workout
+      RETURN workout
+      `
+    )
+    .then((result) => {
+      session.close();
+
+      res.send({ workoutId });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send("Error deleting workout");
+    });
+});
+
+const getSingleWorkout = asyncHandler(async (req, res) => {
+  const { username, workoutId } = req.body;
+
+  const session = driver.session();
+  const result = await session
+    .run(
+      `
+      MATCH (workout:Workout {workout_id: "${workoutId}"})-[set:COMMITED_SET_OF]->(exercise:Exercise)
+      MATCH (workout)-[best_set:BEST_SET]->(exercise)
+      RETURN workout, set, exercise, best_set
+      `
+    )
+    .then((result) => {
+      const workouts = result.records.reduce((acc, record) => {
+        const workoutId = record._fields[0].properties.workout_id;
+        const templateName = record._fields[0].properties.template_name;
+        const exerciseId = record._fields[2].identity.low;
+        const bestSetReps = record._fields[3].properties.reps.low;
+        const bestSetWeight = record._fields[3].properties.weight.low;
+
+        if (!(workoutId in acc)) {
+          acc[workoutId] = {
+            templateName,
+            duration: {
+              hours: record._fields[0].properties.hours.low,
+              minutes: record._fields[0].properties.minutes.low,
+              seconds: record._fields[0].properties.seconds.low,
+            },
+            volume: record._fields[0].properties.volume.low,
+            date: record._fields[0].properties.created_at.toString(),
+            exercises: {
+              [exerciseId]: {
+                exerciseName: record._fields[2].properties.name,
+                bestSet: {
+                  reps: bestSetReps,
+                  weight: bestSetWeight,
+                },
+                sets: [
+                  {
+                    reps: record._fields[1].properties.reps.low,
+                    weight: record._fields[1].properties.weight.low,
+                  },
+                ],
+              },
+            },
+          };
+        } else if (
+          workoutId in acc &&
+          !(exerciseId in acc[workoutId].exercises)
+        ) {
+          acc[workoutId].exercises[exerciseId] = {
+            exerciseName: record._fields[2].properties.name,
+            bestSet: {
+              reps: bestSetReps,
+              weight: bestSetWeight,
+            },
+            sets: [
+              {
+                reps: record._fields[1].properties.reps.low,
+                weight: record._fields[1].properties.weight.low,
+              },
+            ],
+          };
+        } else {
+          acc[workoutId].exercises[exerciseId].sets.push({
+            reps: record._fields[1].properties.reps.low,
+            weight: record._fields[1].properties.weight.low,
+          });
+        }
+
+        return acc;
+      }, {});
+
+      session.close();
+
+      res.send({ ...workouts[workoutId] });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send("Error getting workout");
+    });
+});
+
 module.exports = {
   getWorkoutHistory,
   createWorkout,
+  deleteWorkout,
+  getSingleWorkout,
 };

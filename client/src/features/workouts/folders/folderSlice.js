@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { revertAll } from "../../../app/store";
 
-const initialFolderState = {
+const initialState = {
   folders: [],
   currentTemplate: {},
   loading: false,
@@ -9,7 +10,7 @@ const initialFolderState = {
 
 const folderSlice = createSlice({
   name: "folder",
-  initialState: initialFolderState,
+  initialState,
   reducers: {
     getFolder(state, action) {
       return state.folders.filter(
@@ -109,7 +110,8 @@ const folderSlice = createSlice({
       .addCase("folderApi/getFolderTemplates/rejected", (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-      });
+      })
+      .addCase(revertAll, () => initialState);
   },
 });
 

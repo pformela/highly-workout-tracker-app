@@ -169,7 +169,7 @@ const register = asyncHandler(async (req, res) => {
 const refresh = (req, res) => {
   const cookies = req.cookies;
 
-  if (!cookies?.jwt) {
+  if (!cookies.jwt) {
     return res.status(401).send("Unauthorized");
   }
 

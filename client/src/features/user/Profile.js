@@ -9,7 +9,7 @@ const Profile = () => {
     <div className="min-h-screen bg-navy">
       <NavBar />
       <div>
-        <h1 className="text-4xl font-bold text-center text-white mt-6">
+        <h1 className="text-5xl text-bold text-white mt-6 text-center">
           Profile
         </h1>
         <div className="flex flex-col items-center">
