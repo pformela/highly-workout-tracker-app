@@ -3,16 +3,19 @@ import { useGetWorkoutsMutation } from "../workouts/workoutApiSlice";
 import { selectUsername } from "../user/userSlice";
 import {
   selectWorkoutHistory,
+  selectFilteredWorkoutHistory,
   selectIsWorkoutHistoryEmpty,
 } from "../workouts/workoutSlice";
 import { useSelector } from "react-redux";
 import NavBar from "../../components/NavBar";
 import Training from "./Training";
+import HistoryFilter from "./HistoryFilter";
+import HistorySort from "./HistorySort";
 
 const TrainingHistory = () => {
   const [getWorkouts, { data, error, isLoading }] = useGetWorkoutsMutation();
   const username = useSelector(selectUsername);
-  const workouts = useSelector(selectWorkoutHistory);
+  const workouts = useSelector(selectFilteredWorkoutHistory);
   const isEmpty = useSelector(selectIsWorkoutHistoryEmpty);
   const fetchWorkouts = async () => {
     try {
@@ -34,6 +37,8 @@ const TrainingHistory = () => {
       <h1 className="text-5xl text-bold text-white mt-6 text-center">
         Training History
       </h1>
+      <HistoryFilter />
+      <HistorySort />
       <ul className="flex flex-col mt-6 gap-4 bg-lighterDarkNavy p-4 w-3/5 m-auto text-black rounded-xl border-4 border-darkNavy">
         {Object.keys(workouts).map((workoutId, index) => {
           return (

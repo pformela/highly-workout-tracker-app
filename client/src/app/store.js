@@ -10,6 +10,7 @@ import userReducer from "../features/user/userSlice";
 import folderReducer from "../features/workouts/folders/folderSlice";
 import workoutReducer from "../features/workouts/workoutSlice";
 import { apiSlice } from "./api/apiSlice";
+// import logger from "redux-logger";
 
 export const revertAll = createAction("REVERT_ALL");
 
@@ -32,7 +33,7 @@ const reducerProxy = (state, action) => {
 export const store = configureStore({
   reducer: reducerProxy,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(apiSlice.middleware), //.concat(logger),
   devTools: true,
 });
 

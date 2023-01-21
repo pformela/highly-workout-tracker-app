@@ -44,12 +44,7 @@ const FoundExercises = ({ pick, onSelect }) => {
         {!pick && exercises.length !== 0 ? (
           exercises.map((exercise, index) => (
             <li key={index}>
-              <Exercise
-                name={exercise.name}
-                labels={exercise.labels}
-                equipment={exercise.equipment}
-                instructions={exercise.instructions}
-              />
+              <Exercise exercise={exercise} />
             </li>
           ))
         ) : (

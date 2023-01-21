@@ -12,7 +12,7 @@ const ExerciseSearchForm = (props) => {
         exerciseName: "",
         exerciseType: "",
         exerciseMuscle: "",
-        exerciseDifficulty: "",
+        exerciseDifficulty: "Any Difficulty",
       }}
       onSubmit={(values) => {
         const filter = {
@@ -64,49 +64,75 @@ const ExerciseSearchForm = (props) => {
               onChange={handleChange}
             />
           </div>
-          <div className="flex flex-row gap-2">
-            <select
-              name="exerciseType"
-              id="exerciseType"
-              value={values.exerciseType}
-              onChange={handleChange}
-              className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
-            >
-              <option value="Any Exercise Type">Any Exercise Type</option>
-              {props.types.map((type, index) => (
-                <option key={index} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <select
-              name="exerciseMuscle"
-              id="exerciseMuscle"
-              value={values.exerciseMuscle}
-              onChange={handleChange}
-              className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
-            >
-              <option value="Any Muscle Group">Any Muscle Group</option>
-              {props.muscle.map((muscle, index) => (
-                <option key={index} value={muscle}>
-                  {muscle}
-                </option>
-              ))}
-            </select>
-            <select
-              name="exerciseDifficulty"
-              id="exerciseDifficulty"
-              value={values.exerciseDifficulty}
-              onChange={handleChange}
-              className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
-            >
-              <option value="Any Difficulty">Any Difficulty</option>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2">
+              <select
+                name="exerciseType"
+                id="exerciseType"
+                value={values.exerciseType}
+                onChange={handleChange}
+                className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
+              >
+                <option value="Any Exercise Type">Any Exercise Type</option>
+                {props.types.map((type, index) => (
+                  <option key={index} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="exerciseMuscle"
+                id="exerciseMuscle"
+                value={values.exerciseMuscle}
+                onChange={handleChange}
+                className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
+              >
+                <option value="Any Muscle Group">Any Muscle Group</option>
+                {props.muscle.map((muscle, index) => (
+                  <option key={index} value={muscle}>
+                    {muscle}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-row flex-wrap text-md text-gray bg-darkNavy rounded-xl p-2 w-full self-center">
+              <div className="flex flex-row gap-2 w-1/2">
+                <input
+                  type="radio"
+                  name="exerciseDifficulty"
+                  value="Any Difficulty"
+                  checked={values.exerciseDifficulty === "Any Difficulty"}
+                  onChange={handleChange}
+                  className="self-center w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  key="-1"
+                  htmlFor="Any Difficulty"
+                  className="self-center"
+                >
+                  Any Difficulty
+                </label>
+              </div>
               {props.difficulty.map((difficulty, index) => (
-                <option key={index} value={difficulty}>
-                  {difficulty}
-                </option>
+                <div className="flex flex-row gap-2 w-1/2">
+                  <input
+                    type="radio"
+                    name="exerciseDifficulty"
+                    value={difficulty}
+                    checked={values.exerciseDifficulty === difficulty}
+                    onChange={handleChange}
+                    className="self-center w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    key={index}
+                    htmlFor={difficulty}
+                    className="self-center"
+                  >
+                    {difficulty}
+                  </label>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
           <button
             className="bg-darkNavy text-2xl px-4 py-1 rounded-md font-bold text-silver hover:bg-white hover:text-darkNavy"
