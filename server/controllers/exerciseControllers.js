@@ -24,8 +24,7 @@ const getExercises = asyncHandler(async (req, res) => {
             ${
               name.trim().length > 0 ? `WHERE ex.name =~ '(?i).*${name}.*'` : ""
             } 
-            RETURN ex, id(ex) AS exerciseId
-            SKIP ${offset} LIMIT 25`
+            RETURN ex, id(ex) AS exerciseId`
     )
     .then((exerciseResult) => {
       session.close();
@@ -44,7 +43,6 @@ const getExercises = asyncHandler(async (req, res) => {
             res.send({ result: [], count: 0 });
             return;
           }
-          console.log(exerciseResult.records[0]._fields[1].low);
           res.send({
             result: exerciseResult.records.map((r) => {
               return {

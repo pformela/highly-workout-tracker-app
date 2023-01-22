@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik } from "formik";
 import { useDispatch } from "react-redux";
-import { fetchExercises } from "./exercisesSlice";
+import { exerciseActions } from "./exercisesSlice";
 
 const ExerciseSearchForm = (props) => {
   const dispatch = useDispatch();
@@ -29,9 +29,11 @@ const ExerciseSearchForm = (props) => {
             values.exerciseDifficulty === "Any Difficulty"
               ? ""
               : values.exerciseDifficulty,
-          offset: 0,
         };
-        dispatch(fetchExercises(filter));
+        console.log(filter);
+        dispatch(exerciseActions.filterExercises(filter));
+        dispatch(exerciseActions.goBackToFirstPage());
+        props.setCurrentPage(1);
       }}
     >
       {({ values, handleChange, handleSubmit }) => (
@@ -56,6 +58,7 @@ const ExerciseSearchForm = (props) => {
             </svg>
             <input
               className="pl-1 px-2 py-2 rounded-lg bg-darkNavy text-silver active:outline-none focus:outline-none"
+              key="nameInput"
               type="text"
               name="exerciseName"
               id="exerciseName"
@@ -68,14 +71,17 @@ const ExerciseSearchForm = (props) => {
             <div className="flex flex-row gap-2">
               <select
                 name="exerciseType"
+                key="typeSelect"
                 id="exerciseType"
                 value={values.exerciseType}
                 onChange={handleChange}
                 className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
               >
-                <option value="Any Exercise Type">Any Exercise Type</option>
+                <option key="type-1" value="Any Exercise Type">
+                  Any Exercise Type
+                </option>
                 {props.types.map((type, index) => (
-                  <option key={index} value={type}>
+                  <option key={`type${index}`} value={type}>
                     {type}
                   </option>
                 ))}
@@ -83,13 +89,16 @@ const ExerciseSearchForm = (props) => {
               <select
                 name="exerciseMuscle"
                 id="exerciseMuscle"
+                key="muscleSelect"
                 value={values.exerciseMuscle}
                 onChange={handleChange}
                 className="bg-darkNavy text-gray px-2 py-1 rounded-lg"
               >
-                <option value="Any Muscle Group">Any Muscle Group</option>
+                <option key="muscle-1" value="Any Muscle Group">
+                  Any Muscle Group
+                </option>
                 {props.muscle.map((muscle, index) => (
-                  <option key={index} value={muscle}>
+                  <option key={`muscle${index}`} value={muscle}>
                     {muscle}
                   </option>
                 ))}
@@ -99,6 +108,7 @@ const ExerciseSearchForm = (props) => {
               <div className="flex flex-row gap-2 w-1/2">
                 <input
                   type="radio"
+                  key="difficultyInput"
                   name="exerciseDifficulty"
                   value="Any Difficulty"
                   checked={values.exerciseDifficulty === "Any Difficulty"}
@@ -117,6 +127,7 @@ const ExerciseSearchForm = (props) => {
                 <div className="flex flex-row gap-2 w-1/2">
                   <input
                     type="radio"
+                    key={`diff${index}`}
                     name="exerciseDifficulty"
                     value={difficulty}
                     checked={values.exerciseDifficulty === difficulty}
@@ -124,7 +135,7 @@ const ExerciseSearchForm = (props) => {
                     className="self-center w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    key={index}
+                    key={`difflabel${index}`}
                     htmlFor={difficulty}
                     className="self-center"
                   >

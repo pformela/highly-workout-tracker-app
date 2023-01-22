@@ -1,6 +1,12 @@
 const asyncHandler = require("express-async-handler");
+const { getDownloadURL } = require("firebase/storage");
 const neo4j = require("neo4j-driver");
 const { v4: uuidv4 } = require("uuid");
+const ref = require("firebase/storage").ref;
+const uploadBytes = require("firebase/storage").uploadBytes;
+const storage = require("../firebase");
+const multer = require("multer");
+const upload = multer();
 
 const driver = neo4j.driver(
   process.env.NEO4J_URI,
@@ -24,6 +30,7 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
     .then((result) => {
       const workouts = result.records.reduce((acc, record) => {
         const workoutId = record._fields[0].properties.workout_id;
+        const imageUrl = record._fields[0].properties.image_url;
         const templateName = record._fields[0].properties.template_name;
         const exerciseId = record._fields[2].identity.low;
         const bestSetReps = record._fields[3].properties.reps.low;
@@ -32,6 +39,7 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
         if (!(workoutId in acc)) {
           acc[workoutId] = {
             templateName,
+            imageUrl,
             duration: {
               hours: record._fields[0].properties.hours.low,
               minutes: record._fields[0].properties.minutes.low,
@@ -103,6 +111,12 @@ const createWorkout = asyncHandler(async (req, res) => {
 
   const workoutId = uuidv4();
 
+  const imageUrl = "";
+
+  // const imageRef = image ? ref(storage, `workoutImages/${workoutId}`) : null;
+  // const imageUploadResult = image ? await uploadBytes(imageRef, image) : null;
+  // const imageUrl = image ? await getDownloadURL(imageUploadResult.ref) : "";
+
   const workoutVolume = exercises.reduce((acc, exercise) => {
     return (
       acc +
@@ -170,7 +184,7 @@ const createWorkout = asyncHandler(async (req, res) => {
         duration.hours
       }, minutes: ${duration.minutes}, seconds: ${
         duration.seconds
-      }, template_name: "${templateName}", workout_id: "${workoutId}", volume: ${workoutVolume}, created_at: datetime()})
+      }, template_name: "${templateName}", workout_id: "${workoutId}", volume: ${workoutVolume}, created_at: datetime(), image_url: "${imageUrl}"})
       ${exercises.reduce((accEx, exercise) => {
         return (
           accEx +
@@ -198,13 +212,9 @@ const createWorkout = asyncHandler(async (req, res) => {
       `
     )
     .then((result) => {
-      const workouts = result.records.map((workout) => {
-        return workout._fields[0].properties;
-      });
-
       session.close();
 
-      res.send(workouts);
+      res.send({ workoutId });
     })
     .catch((error) => {
       console.log(error);
@@ -250,6 +260,7 @@ const getSingleWorkout = asyncHandler(async (req, res) => {
     .then((result) => {
       const workouts = result.records.reduce((acc, record) => {
         const workoutId = record._fields[0].properties.workout_id;
+        const imageUrl = record._fields[0].properties.image_url;
         const templateName = record._fields[0].properties.template_name;
         const exerciseId = record._fields[2].identity.low;
         const bestSetReps = record._fields[3].properties.reps.low;
@@ -258,6 +269,7 @@ const getSingleWorkout = asyncHandler(async (req, res) => {
         if (!(workoutId in acc)) {
           acc[workoutId] = {
             templateName,
+            imageUrl,
             duration: {
               hours: record._fields[0].properties.hours.low,
               minutes: record._fields[0].properties.minutes.low,

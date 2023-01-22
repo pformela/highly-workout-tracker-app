@@ -15,10 +15,12 @@ import {
   useAddWorkoutToHistoryMutation,
   useGetWorkoutsMutation,
 } from "./workoutApiSlice";
+import axios from "axios";
 
 const Workout = ({ isTemplate }) => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
   const [showFinishWorkoutModal, setShowFinishWorkoutModal] = useState(false);
+  const [image, setImage] = useState(null);
   const [showExerciseMoreInfoModal, setShowExerciseMoreInfoModal] =
     useState(false);
   const [exerciseMoreInfo, setExerciseMoreInfo] = useState({});
@@ -126,7 +128,7 @@ const Workout = ({ isTemplate }) => {
 
     if (isTemplate) {
       try {
-        const result = await addWorkoutToHistory(workout);
+        const { data } = await addWorkoutToHistory(workout).unwrap();
         await getWorkouts({ username });
       } catch (err) {
         console.log(err);
@@ -135,7 +137,6 @@ const Workout = ({ isTemplate }) => {
       console.log("update me plz");
     }
 
-    console.log(workout);
     navigate("/history");
   };
   const handleInputChange = (e, exerciseIndex, setIndex, type) => {
@@ -346,6 +347,19 @@ const Workout = ({ isTemplate }) => {
                 </div>
               </ul>
             ))}
+            {isTemplate && (
+              <div className="flex flex-col gap-2 text-white w-max self-center items-center">
+                <h1 className="text-xl">
+                  Upload a photo to sum up your training
+                </h1>
+                <input
+                  type="file"
+                  name="image"
+                  onChange={(e) => setImage(e.target.files[0])}
+                  className="block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-darkNavy border-darkGray placeholder-darkGray"
+                />
+              </div>
+            )}
             <div className="flex flex-row gap-2 justify-center">
               {isTemplate ? (
                 <>

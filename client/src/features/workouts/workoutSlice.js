@@ -11,13 +11,17 @@ const WEEK_DAYS = {
   Sun: "Sunday",
 };
 
+const RESULTS_PER_PAGE = 5;
+
 const initialState = {
   currentWorkout: {},
   currentSharedWorkout: {},
   workoutHistory: {},
   filteredWorkoutHistory: {},
+  currentPageWorkouts: {},
   isWorkoutHistoryEmpty: false,
   isCurrentSharedWorkoutEmpty: false,
+  numberOfResults: 0,
   error: "",
 };
 
@@ -34,6 +38,8 @@ const workoutSlice = createSlice({
       const dayOfMonth = date.split(" ")[2];
 
       workout["formattedDate"] = `${day}, ${month} ${dayOfMonth}`;
+
+      state.numberOfResults += 1;
 
       state.workoutHistory[workoutId] = workout;
     },
@@ -53,13 +59,24 @@ const workoutSlice = createSlice({
 
       state.workoutHistory = editedHistory;
       state.filteredWorkoutHistory = editedHistory;
+      state.numberOfResults = Object.keys(editedHistory).length;
 
-      console.log(history);
+      state.currentPageWorkouts = Object.keys(editedHistory)
+        .slice(0, RESULTS_PER_PAGE)
+        .reduce((acc, w) => {
+          return { ...acc, [w]: editedHistory[w] };
+        }, {});
+
       if (JSON.stringify(action.payload) === "{}")
         state.isWorkoutHistoryEmpty = true;
     },
     deleteWorkout(state, action) {
+      console.log("deleteWorkout action.payload: ", action.payload);
       delete state.workoutHistory[action.payload];
+      delete state.filteredWorkoutHistory[action.payload];
+      delete state.currentPageWorkouts[action.payload];
+
+      state.numberOfResults -= 1;
     },
     setCurrentWorkoutTemplate(state, action) {
       state.currentWorkout = action.payload;
@@ -105,9 +122,23 @@ const workoutSlice = createSlice({
       state.filteredWorkoutHistory = filteredKeys.reduce((acc, key) => {
         return { ...acc, [key]: history[key] };
       }, {});
+
+      state.numberOfResults = filteredKeys.length;
+      state.currentPageWorkouts = filteredKeys
+        .slice(0, RESULTS_PER_PAGE)
+        .reduce((acc, key) => {
+          return { ...acc, [key]: history[key] };
+        }, {});
     },
     resetFilters(state) {
       state.filteredWorkoutHistory = state.workoutHistory;
+
+      state.numberOfResults = Object.keys(state.workoutHistory).length;
+      state.currentPageWorkouts = Object.keys(state.workoutHistory)
+        .slice(0, RESULTS_PER_PAGE)
+        .reduce((acc, key) => {
+          return { ...acc, [key]: state.workoutHistory[key] };
+        }, {});
     },
     sortWorkoutHistory(state, action) {
       const sort = action.payload.type;
@@ -128,6 +159,25 @@ const workoutSlice = createSlice({
       state.filteredWorkoutHistory = sortedKeys.reduce((acc, key) => {
         return { ...acc, [key]: history[key] };
       }, {});
+
+      state.currentPageWorkouts = sortedKeys
+        .slice(0, RESULTS_PER_PAGE)
+        .reduce((acc, key) => {
+          return { ...acc, [key]: history[key] };
+        }, {});
+
+      state.numberOfResults = sortedKeys.length;
+    },
+    changePage(state, action) {
+      const page = action.payload;
+      const history = state.filteredWorkoutHistory;
+      const keys = Object.keys(history);
+
+      state.currentPageWorkouts = keys
+        .slice((page - 1) * RESULTS_PER_PAGE, page * RESULTS_PER_PAGE)
+        .reduce((acc, key) => {
+          return { ...acc, [key]: history[key] };
+        }, {});
     },
   },
   extraReducers: (builder) => {
@@ -135,6 +185,9 @@ const workoutSlice = createSlice({
   },
 });
 
+export const selectCurrentPageWorkouts = (state) =>
+  state.workouts.currentPageWorkouts;
+export const selectNumberOfResults = (state) => state.workouts.numberOfResults;
 export const selectWorkout = (state) => state.workouts.currentWorkout;
 export const selectWorkoutHistory = (state) => state.workouts.workoutHistory;
 export const selectFilteredWorkoutHistory = (state) =>

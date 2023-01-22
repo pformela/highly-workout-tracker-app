@@ -25,7 +25,7 @@ const HistoryFilter = () => {
         dispatch(workoutActions.filterWorkoutHistory(filter));
       }}
     >
-      {({ values, handleChange, handleSubmit }) => (
+      {({ values, handleChange, handleSubmit, resetForm }) => (
         <form
           onSubmit={handleSubmit}
           className="p-6 mx-auto flex flex-col justify-center items-center gap-4 w-min border-b-2 border-gray border-opacity-50"
@@ -87,7 +87,6 @@ const HistoryFilter = () => {
                 <Field
                   type="radio"
                   name="checked"
-                  checked={true}
                   value="anyVolume"
                   className="self-center mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
@@ -149,6 +148,7 @@ const HistoryFilter = () => {
               type="button"
               onClick={() => {
                 dispatch(workoutActions.resetFilters());
+                resetForm();
               }}
             >
               Reset filters

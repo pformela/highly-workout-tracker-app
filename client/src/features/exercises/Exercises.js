@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../../components/NavBar";
 import ExerciseSearchForm from "./ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
+import { selectAllExercises } from "./exercisesSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { exerciseActions, fetchExercises } from "./exercisesSlice";
 
 export const TYPES = [
   "Cardio",
@@ -35,7 +38,15 @@ export const MUSCLE = [
 export const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
 
 const Exercises = () => {
+  const exercises = useSelector(selectAllExercises);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
+    if (exercises.length === 0) {
+      dispatch(fetchExercises());
+    }
     window.scrollTo(0, 0);
   }, []);
 
@@ -47,11 +58,17 @@ const Exercises = () => {
       </h1>
       <div>
         <ExerciseSearchForm
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
           types={TYPES}
           muscle={MUSCLE}
           difficulty={DIFFICULTY}
         />
-        <FoundExercises pick={false} />
+        <FoundExercises
+          pick={false}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </div>
   );

@@ -29,7 +29,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           dispatch(workoutActions.setWorkoutHistory(data));
-          console.log(data);
         } catch (error) {
           console.log(error);
         }
