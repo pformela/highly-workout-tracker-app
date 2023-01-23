@@ -1,34 +1,29 @@
-import { Outlet, Link, useNavigate, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { useRefreshMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
-import { userActions } from "../user/userSlice";
-import NavBar from "../../components/NavBar";
 import Loading from "../../components/UI/Loading";
-import Login from "./Login";
 
 const PersistLogin = () => {
-  const [persist, setPersist] = usePersist();
-  const token = useSelector(selectCurrentToken);
+  const [persist] = usePersist();
+  const [token] = useState(useSelector(selectCurrentToken));
   const effectRan = useRef(false);
-  const dispatch = useDispatch();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [trueSuccess, setTrueSuccess] = useState(false);
 
-  const [refresh, { isUninitialized, isLoading, isSuccess, isError, error }] =
+  const [refresh, { isUninitialized, isLoading, isSuccess, isError }] =
     useRefreshMutation();
 
   const verifyRefreshToken = async () => {
-    console.log("verify refresh token");
     try {
-      const { data } = await refresh();
-      const { userId, username, email } = data;
-      dispatch(userActions.setUser({ userId, username, email }));
+      await refresh();
       setTrueSuccess(true);
+      navigate(location.pathname, { replace: true });
     } catch (err) {
       console.log(err);
     }
@@ -47,16 +42,13 @@ const PersistLogin = () => {
   let content;
   if (!persist) {
     // persist is false
-    console.log("no persist");
     content = <Outlet />;
   } else if (isLoading) {
     // persist is true, token is undefined
-    console.log("loading");
     content = <Loading />;
   } else if (isError) {
     // persist is true, token is undefined
     console.log(token);
-    console.log("error");
     content = <Navigate to="/login" replace={true} />;
   } else if (isSuccess && trueSuccess) {
     // persist is true, token is defined
@@ -64,7 +56,6 @@ const PersistLogin = () => {
     content = <Outlet />;
   } else if (token && isUninitialized) {
     // persist is true, token is defined
-    console.log("token and uninit");
     content = <Outlet />;
   } else {
     content = <Navigate to="/login" replace={true} />;

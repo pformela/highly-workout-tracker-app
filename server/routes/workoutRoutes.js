@@ -8,7 +8,8 @@ const ref = require("firebase/storage");
 router
   .route("/")
   .post(workoutController.createWorkout)
-  .delete(workoutController.deleteWorkout);
+  .delete(workoutController.deleteWorkout)
+  .put(workoutController.updateWorkout);
 
 router.route("/history").post(workoutController.getWorkoutHistory);
 

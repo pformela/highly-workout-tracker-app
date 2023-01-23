@@ -47,7 +47,7 @@ const Exercise = ({ exercise }) => {
       className="flex flex-row gap-4 bg-darkNavy rounded-xl text-white px-6 py-4"
       onClick={() => setShowMoreInfo((prev) => !prev)}
     >
-      <div className="flex flex-col gap-2 w-4/5">
+      <div className="flex flex-col gap-2 w-full">
         <h3 className="text-xl font-bold">{exercise.name}</h3>
         {!showMoreInfo ? (
           <p>
@@ -92,14 +92,18 @@ const Exercise = ({ exercise }) => {
         </div>
       </div>
       <div
-        className={`flex flex-col self-center bg-lighterDarkNavy rounded-xl w-1/5 h-full ${
-          showMoreInfo && "items-start"
+        className={`flex flex-col bg-lighterDarkNavy rounded-xl w-max h-full ${
+          showMoreInfo ? "self-start" : "self-center"
         }`}
       >
         {muscle ? (
-          <img src={MUSCLE_IMAGES[muscle]} alt={muscle} />
+          <img src={MUSCLE_IMAGES[muscle]} alt={muscle} className="w-40" />
         ) : (
-          <img src={MUSCLE_IMAGES["NoMuscle"]} alt="No muscle" />
+          <img
+            src={MUSCLE_IMAGES["NoMuscle"]}
+            alt="No muscle"
+            className="w-40"
+          />
         )}
       </div>
     </div>

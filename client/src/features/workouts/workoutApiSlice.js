@@ -69,12 +69,29 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    updateWorkout: builder.mutation({
+      query: (parameters) => ({
+        url: "/workouts",
+        method: "PUT",
+        body: { ...parameters },
+      }),
+      invalidatesTags: ["WorkoutTemplates"],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log(data);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
 export const {
   useAddWorkoutToHistoryMutation,
   useGetWorkoutsMutation,
+  useUpdateWorkoutMutation,
   useDeleteWorkoutMutation,
   useGetSingleWorkoutMutation,
 } = workoutApiSlice;

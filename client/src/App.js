@@ -16,7 +16,8 @@ const App = () => {
     <Routes>
       <Route element={<PersistLogin />}>
         <Route path="/">
-          <Route index element={<StartWorkout />} />
+          <Route index element={<StartWorkout add={false} />} />
+          <Route path="addTemplate" element={<StartWorkout add={true} />} />
           <Route
             path="/:folderId/:templateId"
             element={<Workout isTemplate={true} />}

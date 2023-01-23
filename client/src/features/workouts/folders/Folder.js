@@ -14,12 +14,11 @@ const Folder = ({ folder }) => {
   const [showDeleteTemplate, setShowDeleteTemplate] = useState(false);
   const username = useSelector(selectUsername);
 
-  const [getTemplates, { isLoading }] = useGetFolderTemplatesMutation();
+  const [getTemplates] = useGetFolderTemplatesMutation();
 
   const getFolderTemplates = async () => {
-    console.log("getting folder templates");
     try {
-      const result = await getTemplates({
+      await getTemplates({
         folderId: folder.folderId,
         folderName: folder.name,
         username,

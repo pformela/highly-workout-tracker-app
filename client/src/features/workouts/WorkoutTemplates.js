@@ -9,15 +9,15 @@ import CreateNewFolder from "./folders/CreateNewFolder";
 import TemplateForm from "./templates/TemplateForm";
 import { useCreateTemplateMutation } from "./templates/templateApiSlice";
 import { useGetFolderTemplatesMutation } from "./folders/folderApiSlice";
+import { Link } from "react-router-dom";
 
-const WorkoutTemplates = () => {
+const WorkoutTemplates = ({ add }) => {
   const [showAddFolder, setShowAddFolder] = useState(false);
-  const [showCreateTemplate, setShowCreateTemplate] = useState(false);
+  const [showCreateTemplate, setShowCreateTemplate] = useState(add);
   const templateFolders = useSelector(selectFolders);
 
-  const [createTemplate, { isLoading }] = useCreateTemplateMutation();
-  const [getTemplates, { isLoading: isLoadingTemplates }] =
-    useGetFolderTemplatesMutation();
+  const [createTemplate] = useCreateTemplateMutation();
+  const [getTemplates] = useGetFolderTemplatesMutation();
 
   const username = useSelector(selectUsername);
 
@@ -69,7 +69,7 @@ const WorkoutTemplates = () => {
       }
 
       try {
-        const { name } = await getTemplates({
+        await getTemplates({
           username,
           folderName: selectedFolderName,
           folderId,
@@ -92,12 +92,14 @@ const WorkoutTemplates = () => {
         <div className="flex flex-row justify-between border-solid border-b-2 mb-2 border-darkGray">
           <h2 className="text-silver text-3xl p-4">Templates</h2>
           <div className="flex flex-row gap-2">
-            <Button
-              className="text-center bg-darkNavy self-center"
-              onClick={() => setShowCreateTemplate(true)}
-            >
-              New template
-            </Button>
+            <Link to="/addTemplate" className="self-center">
+              <Button
+                className="text-center bg-darkNavy self-center"
+                onClick={() => setShowCreateTemplate(true)}
+              >
+                New template
+              </Button>
+            </Link>
             <Button
               className="text-center bg-darkNavy self-center"
               onClick={() => setShowAddFolder(true)}

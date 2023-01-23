@@ -4,13 +4,12 @@ import TemplateForm from "./TemplateForm";
 import { useSelector } from "react-redux";
 import { selectUsername } from "../../user/userSlice";
 import { useUpdateTemplateMutation } from "./templateApiSlice";
-import { useGetFolderTemplatesMutation } from "../folders/folderApiSlice";
 import DeleteTemplate from "./DeleteTemplate";
 import TemplateInfo from "./TemplateInfo";
 import { useNavigate } from "react-router-dom";
 
-const ShortTemplateInfo = ({ template, templateId, folderId }) => {
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
+const ShortTemplateInfo = ({ template, templateId, folderId, update }) => {
+  const [showUpdateModal, setShowUpdateModal] = useState(update);
   const [showMoreInfoModal, setShowMoreInfoModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -51,9 +50,7 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
     </div>
   );
 
-  const [updateTemplate, { isLoading }] = useUpdateTemplateMutation();
-  const [getTemplates, { isLoading: isLoadingTemplates }] =
-    useGetFolderTemplatesMutation();
+  const [updateTemplate] = useUpdateTemplateMutation();
 
   const username = useSelector(selectUsername);
 
@@ -90,7 +87,7 @@ const ShortTemplateInfo = ({ template, templateId, folderId }) => {
       });
 
       try {
-        const { name } = await updateTemplate({
+        await updateTemplate({
           username,
           templateId,
           folderId: formFolderId,

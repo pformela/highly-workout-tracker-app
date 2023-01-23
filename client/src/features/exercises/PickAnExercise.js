@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import Button from "../../components/UI/Button";
 import { TYPES, MUSCLE, DIFFICULTY } from "./Exercises";
-import { exerciseActions } from "./exercisesSlice";
-import { useDispatch } from "react-redux";
 
 const PickAnExercise = (props) => {
   const [show, setShow] = useState(false);
   const labels = props.labels.filter((label) => label !== "Exercise");
-
-  const dispatch = useDispatch();
 
   return (
     <div
@@ -22,8 +18,6 @@ const PickAnExercise = (props) => {
           onClick={() => {
             props.onSelect(props.name, props.exerciseId);
             console.log("props.name: " + props.name);
-            dispatch(exerciseActions.clearExercises());
-            // props.onSelectId();
           }}
         >
           Select
@@ -70,6 +64,8 @@ const PickAnExercise = (props) => {
               </span>
             );
           }
+
+          return null;
         })}
       </div>
     </div>

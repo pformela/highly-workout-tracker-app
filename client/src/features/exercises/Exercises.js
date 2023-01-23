@@ -4,7 +4,7 @@ import ExerciseSearchForm from "./ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
 import { selectAllExercises } from "./exercisesSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { exerciseActions, fetchExercises } from "./exercisesSlice";
+import { fetchExercises } from "./exercisesSlice";
 
 export const TYPES = [
   "Cardio",
@@ -37,7 +37,7 @@ export const MUSCLE = [
 
 export const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
 
-const Exercises = () => {
+const Exercises = ({ pick, onSelect }) => {
   const exercises = useSelector(selectAllExercises);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -48,14 +48,19 @@ const Exercises = () => {
       dispatch(fetchExercises());
     }
     window.scrollTo(0, 0);
+    // eslint-disable-next-line
   }, []);
 
   return (
-    <div className="min-h-screen bg-navy">
-      <NavBar />
-      <h1 className="text-5xl text-bold text-white mt-6 text-center">
-        Exercises
-      </h1>
+    <div className={`bg-navy ${pick ? "h-min" : "min-h-screen"}`}>
+      {!pick && (
+        <>
+          <NavBar />
+          <h1 className="text-5xl text-bold text-white mt-6 text-center">
+            Exercises
+          </h1>
+        </>
+      )}
       <div>
         <ExerciseSearchForm
           setCurrentPage={setCurrentPage}
@@ -65,8 +70,9 @@ const Exercises = () => {
           difficulty={DIFFICULTY}
         />
         <FoundExercises
-          pick={false}
+          pick={pick}
           setCurrentPage={setCurrentPage}
+          onSelect={onSelect}
           currentPage={currentPage}
         />
       </div>

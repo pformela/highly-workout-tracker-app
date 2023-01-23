@@ -41,7 +41,10 @@ const ExerciseSearchForm = (props) => {
           onSubmit={handleSubmit}
           className="p-6 mx-auto flex flex-col justify-center items-center gap-4 w-min border-b-2 border-gray border-opacity-50"
         >
-          <div className="self-stretch h-min flex flex-row bg-darkNavy px-2 rounded-xl">
+          <div
+            key="div-1"
+            className="self-stretch h-min flex flex-row bg-darkNavy px-2 rounded-xl"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -67,7 +70,7 @@ const ExerciseSearchForm = (props) => {
               onChange={handleChange}
             />
           </div>
-          <div className="flex flex-col gap-2">
+          <div key="div-2" className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
               <select
                 name="exerciseType"
@@ -104,7 +107,10 @@ const ExerciseSearchForm = (props) => {
                 ))}
               </select>
             </div>
-            <div className="flex flex-row flex-wrap text-md text-gray bg-darkNavy rounded-xl p-2 w-full self-center">
+            <div
+              key="div-3"
+              className="flex flex-row flex-wrap text-md text-gray bg-darkNavy rounded-xl p-2 w-full self-center"
+            >
               <div className="flex flex-row gap-2 w-1/2">
                 <input
                   type="radio"
@@ -116,7 +122,7 @@ const ExerciseSearchForm = (props) => {
                   className="self-center w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <label
-                  key="-1"
+                  key="-1label"
                   htmlFor="Any Difficulty"
                   className="self-center"
                 >
@@ -124,7 +130,10 @@ const ExerciseSearchForm = (props) => {
                 </label>
               </div>
               {props.difficulty.map((difficulty, index) => (
-                <div className="flex flex-row gap-2 w-1/2">
+                <div
+                  className="flex flex-row gap-2 w-1/2"
+                  key={`diffDiv${index}`}
+                >
                   <input
                     type="radio"
                     key={`diff${index}`}

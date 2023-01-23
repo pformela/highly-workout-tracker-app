@@ -10,8 +10,8 @@ const HistorySort = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex flex-col text-white mt-4 pb-4 border-b-2 border-darkGray w-96 m-auto gap-4">
-      <h1 className="self-center text-4xl">Sort results by</h1>
+    <div className="flex flex-col text-white mt-4 pb-4 border-b-2 border-darkGray w-96 m-auto gap-2">
+      <h1 className="self-center text-2xl">Sort results by</h1>
       <div className="flex flex-row gap-2 self-center">
         <button
           className={`px-6 py-2 text-xl font-bold rounded-md ${

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import ExercisesPageNavigation from "./ExercisesPageNavigation";
 import Exercise from "./Exercise";
@@ -6,7 +6,6 @@ import PickAnExercise from "./PickAnExercise";
 import {
   selectCurrentPageExercises,
   selectExerciseCount,
-  exerciseActions,
 } from "./exercisesSlice";
 
 const FoundExercises = ({ pick, onSelect, currentPage, setCurrentPage }) => {
@@ -51,7 +50,7 @@ const FoundExercises = ({ pick, onSelect, currentPage, setCurrentPage }) => {
           ))
         ) : (
           <div
-            className={`flex flex-col gap-2 scrollbar h-80 overflow-auto ${
+            className={`flex flex-col gap-2 scrollbar h-80 w-max self-center overflow-auto ${
               exercises.length !== 0 ? " border-2 border-darkGray" : ""
             } rounded-xl p-4`}
           >

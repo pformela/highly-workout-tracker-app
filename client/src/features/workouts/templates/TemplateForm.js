@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import Button from "../../../components/UI/Button";
+import Exercises from "../../exercises/Exercises";
 import { selectFolders } from "../folders/folderSlice";
 import { useSelector } from "react-redux";
-import ExerciseSearchForm from "../../exercises/ExerciseSearchForm";
-import FoundExercises from "../../exercises/FoundExercises";
-import { TYPES, MUSCLE, DIFFICULTY } from "../../exercises/Exercises";
 import "./Scrollbar.css";
+import { useNavigate } from "react-router-dom";
 
 const TemplateForm = ({
   onClose,
@@ -21,6 +20,7 @@ const TemplateForm = ({
   const [folderId, setFolderId] = useState(formFolderId);
   const [selectedFolderName, setSelectedFolderName] = useState("");
   const [folderIdIsValid, setFolderIdIsValid] = useState(true);
+  const [isNoExerciseError, setIsNoExerciseError] = useState(false);
   const [exercises, setExercises] = useState(
     formExercises.map((exercise) => {
       exercise.nameIsValid = true;
@@ -33,6 +33,8 @@ const TemplateForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPickExercise, setShowPickExercise] = useState(false);
   const [formExerciseIndex, setFormExerciseIndex] = useState(0);
+
+  const navigate = useNavigate();
 
   const folders = useSelector(selectFolders);
 
@@ -84,6 +86,8 @@ const TemplateForm = ({
         weightIsValid: true,
       },
     ]);
+
+    setIsNoExerciseError(false);
   };
 
   const validateExerciseInputs = () => {
@@ -106,6 +110,7 @@ const TemplateForm = ({
         exercise.weightIsValid = false;
         console.log("weight is invalid");
       }
+      return exercise;
     });
 
     const finalResult = validatedExercises.reduce((acc, curr) => {
@@ -118,6 +123,11 @@ const TemplateForm = ({
     }, true);
 
     setExercises(validatedExercises);
+
+    if (validatedExercises.length === 0) {
+      setIsNoExerciseError(true);
+      return false;
+    }
 
     return finalResult;
   };
@@ -148,6 +158,7 @@ const TemplateForm = ({
     ];
     if (newExercises.length === 0) {
       setShowPickExercise(false);
+      setIsNoExerciseError(true);
     }
     setExercises(newExercises);
   };
@@ -161,12 +172,7 @@ const TemplateForm = ({
               Pick an exercise
             </h1>
             <div className="pr-4 border-r-2 border-darkNavy">
-              <ExerciseSearchForm
-                types={TYPES}
-                muscle={MUSCLE}
-                difficulty={DIFFICULTY}
-              />
-              <FoundExercises pick={true} onSelect={handleSelectExercise} />
+              <Exercises pick={true} onSelect={handleSelectExercise} />
             </div>
           </div>
         )}
@@ -201,6 +207,11 @@ const TemplateForm = ({
               value={templateName}
             />
           </div>
+          {isNoExerciseError && (
+            <h1 className="text-red-500 text-center text-xl p-2">
+              Please add at least one exercise
+            </h1>
+          )}
           <div className="flex flex-col scrollbar px-4 gap-4 overflow-auto min-h-0 max-h-80">
             {exercises.length > 0 && (
               <div className="flex flex-row gap-2 justify-between">
@@ -306,7 +317,8 @@ const TemplateForm = ({
             <Button
               className="bg-green-500 w-min text-white font-bold rounded-md text-xl self-center hover:bg-silver hover:text-darkNavy"
               type="submit"
-              onClick={(e) =>
+              disabled={isSubmitting}
+              onClick={(e) => {
                 onSubmit(
                   e,
                   exercises,
@@ -317,14 +329,18 @@ const TemplateForm = ({
                   setIsSubmitting,
                   setTemplateNameIsValid,
                   setFolderIdIsValid
-                )
-              }
+                );
+                navigate("/");
+              }}
             >
               {type}
             </Button>
             <Button
               className="flex self-center bg-red-500 text-xl font-bold hover:bg-silver hover:text-darkNavy"
-              onClick={onClose}
+              onClick={() => {
+                navigate("/");
+                onClose();
+              }}
               type="button"
             >
               Cancel

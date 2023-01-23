@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { selectTemplate } from "./folders/folderSlice";
 import { selectWorkout } from "./workoutSlice";
 import { selectUsername } from "../../features/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import NavBar from "../../components/NavBar";
 import WorkoutExerciseTableHeader from "./WorkoutExerciseTableHeader";
 import Modal from "../../components/UI/Modal";
@@ -14,8 +14,8 @@ import ExerciseMoreInfoModal from "../exercises/ExerciseMoreInfoModal";
 import {
   useAddWorkoutToHistoryMutation,
   useGetWorkoutsMutation,
+  useUpdateWorkoutMutation,
 } from "./workoutApiSlice";
-import axios from "axios";
 
 const Workout = ({ isTemplate }) => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
@@ -25,7 +25,7 @@ const Workout = ({ isTemplate }) => {
     useState(false);
   const [exerciseMoreInfo, setExerciseMoreInfo] = useState({});
   const [finishing, setFinishing] = useState(false);
-  const { folderId, templateId, workoutId } = useParams();
+  const { folderId, templateId } = useParams();
 
   const navigate = useNavigate();
 
@@ -49,6 +49,7 @@ const Workout = ({ isTemplate }) => {
       }
     }, 1000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seconds]);
 
   const template = useSelector((state) =>
@@ -59,7 +60,7 @@ const Workout = ({ isTemplate }) => {
 
   const [exercises, setExercises] = useState(
     isTemplate
-      ? JSON.parse(JSON.stringify(template.exercises))
+      ? JSON.parse(JSON.stringify(template.exercises || []))
           .reverse()
           .map((e) => {
             const sets = {};
@@ -85,6 +86,7 @@ const Workout = ({ isTemplate }) => {
           e.isDone = true;
           e.sets.map((set) => {
             set.isDone = true;
+            return set;
           });
           return e;
         })
@@ -92,6 +94,7 @@ const Workout = ({ isTemplate }) => {
 
   const [addWorkoutToHistory] = useAddWorkoutToHistoryMutation();
   const [getWorkouts] = useGetWorkoutsMutation();
+  const [updateWorkout] = useUpdateWorkoutMutation();
 
   const handleFinishWorkout = async () => {
     const newExercises = JSON.parse(JSON.stringify(exercises));
@@ -128,13 +131,22 @@ const Workout = ({ isTemplate }) => {
 
     if (isTemplate) {
       try {
-        const { data } = await addWorkoutToHistory(workout).unwrap();
+        await addWorkoutToHistory(workout).unwrap();
         await getWorkouts({ username });
       } catch (err) {
         console.log(err);
       }
     } else {
-      console.log("update me plz");
+      try {
+        console.log(workout);
+        await updateWorkout({
+          ...workout,
+          workoutId: template.workoutId,
+        }).unwrap();
+        await getWorkouts({ username });
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     navigate("/history");
@@ -156,11 +168,20 @@ const Workout = ({ isTemplate }) => {
     setExercises(newExercises);
   };
 
-  if (!template) {
+  if (JSON.stringify(template) === "{}") {
     return (
       <div className="bg-navy min-h-screen">
         <NavBar />
-        <div>You don't have access to this content</div>
+        <div className="flex flex-col">
+          <h1 className="text-white font-bold text-3xl mt-6 text-center">
+            You don't have access to this content
+          </h1>
+          <Link to="/" className="self-center">
+            <button className="bg-blue-500 border-2 border-blue-500 hover:border-white text-white font-bold py-2 px-4 rounded mt-6 ml-6">
+              Go back to templates
+            </button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -228,6 +249,7 @@ const Workout = ({ isTemplate }) => {
           <div className="flex flex-col gap-4">
             {exercises.map((exercise, exIndex) => (
               <ul
+                key={`ul${exIndex}`}
                 className={`flex flex-row w-max m-auto rounded-xl p-4 ${
                   exercise.isDone
                     ? "border-2 border-greenRgba bg-greenRgba2"
@@ -260,6 +282,7 @@ const Workout = ({ isTemplate }) => {
                     .map((set, index) => {
                       return (
                         <ul
+                          key={`ul${exIndex}${index}`}
                           className={`flex flex-row p-2 rounded-xl gap-2 ${
                             exercise.sets[set].isDone ? "bg-greenRgba" : ""
                           }`}

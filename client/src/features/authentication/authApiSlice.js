@@ -1,9 +1,6 @@
 import { apiSlice } from "../../app/api/apiSlice";
 import { logout, setCredentials } from "./authSlice";
 import { userActions } from "../user/userSlice";
-import { folderActions } from "../workouts/folders/folderSlice";
-import { workoutActions } from "../workouts/workoutSlice";
-import { exerciseActions } from "../exercises/exercisesSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -47,13 +44,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
+          await queryFulfilled;
           dispatch(logout());
-          // dispatch(folderActions.revertAll());
-          // dispatch(workoutActions.revertAll());
-          // dispatch(exerciseActions.revertAll());
-          // dispatch(userActions.revertAll());
-          // dispatch(apiSlice.util.resetApiState());
         } catch (error) {
           console.log(error);
         }

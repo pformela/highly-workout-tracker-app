@@ -28,34 +28,34 @@ const HistoryFilter = () => {
       {({ values, handleChange, handleSubmit, resetForm }) => (
         <form
           onSubmit={handleSubmit}
-          className="p-6 mx-auto flex flex-col justify-center items-center gap-4 w-min border-b-2 border-gray border-opacity-50"
+          className="p-6 mx-auto flex flex-col justify-center items-center gap-4 w-max border-b-2 border-gray border-opacity-50"
         >
-          <div className="self-stretch h-min flex flex-row bg-darkNavy px-2 rounded-xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="silver"
-              className="h-6 w-6 self-center"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          <div className="flex flex-row w-full gap-4">
+            <div className="self-stretch h-min flex flex-row bg-darkNavy px-2 rounded-xl w-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="silver"
+                className="h-6 w-6 self-center"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+              <input
+                className="pl-1 px-2 py-2 rounded-lg bg-darkNavy text-silver active:outline-none focus:outline-none"
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Workout template name"
+                value={values.name}
+                onChange={handleChange}
               />
-            </svg>
-            <input
-              className="pl-1 px-2 py-2 rounded-lg bg-darkNavy text-silver active:outline-none focus:outline-none"
-              type="text"
-              name="name"
-              id="name"
-              placeholder="Workout template name"
-              value={values.name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
+            </div>
             <div className="flex flex-row gap-2">
               <select
                 name="hours"
@@ -78,11 +78,13 @@ const HistoryFilter = () => {
                 </option>
               </select>
             </div>
-            <div className="flex flex-col flex-wrap text-md text-gray bg-darkNavy rounded-xl p-2 w-full self-center p-4">
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row flex-wrap text-md text-gray bg-darkNavy rounded-xl p-2 w-full self-center p-4">
               <label
                 key="6"
                 htmlFor="volume0"
-                className="flex flex-row self-start text-center"
+                className="flex flex-row self-start text-center w-1/2"
               >
                 <Field
                   type="radio"
@@ -96,7 +98,7 @@ const HistoryFilter = () => {
               <label
                 key="7"
                 htmlFor="volume5000"
-                className="flex flex-row self-start text-center"
+                className="flex flex-row self-start text-center w-1/2"
               >
                 <Field
                   type="radio"
@@ -110,7 +112,7 @@ const HistoryFilter = () => {
               <label
                 key="8"
                 htmlFor="volume5001-10000"
-                className="flex flex-row self-start text-center"
+                className="flex flex-row self-start text-center w-1/2"
               >
                 <Field
                   type="radio"
@@ -124,7 +126,7 @@ const HistoryFilter = () => {
               <label
                 key="9"
                 htmlFor="volume10000+"
-                className="flex flex-row self-start text-center"
+                className="flex flex-row self-start text-center w-1/2"
               >
                 <Field
                   type="radio"

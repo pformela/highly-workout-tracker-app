@@ -1,12 +1,6 @@
 const asyncHandler = require("express-async-handler");
-const { getDownloadURL } = require("firebase/storage");
 const neo4j = require("neo4j-driver");
 const { v4: uuidv4 } = require("uuid");
-const ref = require("firebase/storage").ref;
-const uploadBytes = require("firebase/storage").uploadBytes;
-const storage = require("../firebase");
-const multer = require("multer");
-const upload = multer();
 
 const driver = neo4j.driver(
   process.env.NEO4J_URI,
@@ -112,10 +106,6 @@ const createWorkout = asyncHandler(async (req, res) => {
   const workoutId = uuidv4();
 
   const imageUrl = "";
-
-  // const imageRef = image ? ref(storage, `workoutImages/${workoutId}`) : null;
-  // const imageUploadResult = image ? await uploadBytes(imageRef, image) : null;
-  // const imageUrl = image ? await getDownloadURL(imageUploadResult.ref) : "";
 
   const workoutVolume = exercises.reduce((acc, exercise) => {
     return (
@@ -245,6 +235,141 @@ const deleteWorkout = asyncHandler(async (req, res) => {
     });
 });
 
+const updateWorkout = asyncHandler(async (req, res) => {
+  const { username, exercises, userWeight, workoutId } = req.body;
+
+  const workoutVolume = Object.values({ ...exercises }).reduce(
+    (acc, exercise) => {
+      return (
+        acc +
+        exercise.sets.reduce((acc, set) => {
+          if (set.weightType === "bodyweight")
+            return acc + set.reps * (userWeight + set.weight);
+          else return acc + set.weight * set.reps;
+        }, 0)
+      );
+    },
+    0
+  );
+
+  console.log(workoutVolume);
+
+  const bestSets = Object.values({ ...exercises }).reduce((acc, exercise) => {
+    const bestSet = exercise.sets.reduce(
+      (acc, set) => {
+        if (set.weight > acc.weight) {
+          return set;
+        } else if (set.weight === acc.weight) {
+          if (set.reps > acc.reps) {
+            return set;
+          } else {
+            return acc;
+          }
+        } else {
+          return acc;
+        }
+      },
+
+      { reps: 0, weight: 0 }
+    );
+
+    return { ...acc, [exercise.exerciseId]: bestSet };
+  }, {});
+
+  const deleteSession = driver.session();
+  const deleteResult = await deleteSession
+    .run(
+      `
+      MATCH (workout:Workout {workout_id: "${workoutId}"})-[set:COMMITED_SET_OF]->(exercise:Exercise)
+      MATCH (workout)-[best_set:BEST_SET]->(exercise)
+      DELETE set, best_set
+      `
+    )
+    .then((result) => {
+      deleteSession.close();
+
+      const updateSession = driver.session();
+      const updateResult = updateSession
+        .run(
+          `
+          MATCH (workout:Workout {workout_id: "${workoutId}"})
+          MATCH (user:User {username: "${username}"})
+          ${exercises.reduce((acc, exercise) => {
+            return (
+              acc +
+              `
+              MATCH (ex${exercise.exerciseId}:Exercise {name: "${exercise.exerciseName}"})\n
+              WHERE ID(ex${exercise.exerciseId}) = ${exercise.exerciseId}\n
+              `
+            );
+          }, "")}
+          ${exercises.reduce((acc, exercise) => {
+            return (
+              acc +
+              `
+                MERGE (user)-[best_set${exercise.exerciseId}:BEST_SET_OF]->(ex${
+                exercise.exerciseId
+              })\n
+                SET best_set${exercise.exerciseId}.reps = CASE WHEN best_set${
+                exercise.exerciseId
+              }.reps IS NULL THEN ${bestSets[exercise.exerciseId].reps}
+                WHEN ${bestSets[exercise.exerciseId].reps} > best_set${
+                exercise.exerciseId
+              }.reps THEN ${bestSets[exercise.exerciseId].reps} 
+                ELSE best_set${exercise.exerciseId}.reps END
+                SET best_set${exercise.exerciseId}.weight = CASE WHEN best_set${
+                exercise.exerciseId
+              }.weight IS NULL THEN ${bestSets[exercise.exerciseId].weight}
+                WHEN ${bestSets[exercise.exerciseId].weight} > best_set${
+                exercise.exerciseId
+              }.weight THEN ${bestSets[exercise.exerciseId].weight} 
+                ELSE best_set${exercise.exerciseId}.weight END
+              `
+            );
+          }, "")}
+          ${exercises.reduce((accEx, exercise) => {
+            return (
+              accEx +
+              `MERGE (workout)-[best_set_exercise${
+                exercise.exerciseId
+              }:BEST_SET]->(ex${exercise.exerciseId})\n
+              SET best_set_exercise${exercise.exerciseId}.reps = ${
+                bestSets[exercise.exerciseId].reps
+              }
+              SET best_set_exercise${exercise.exerciseId}.weight = ${
+                bestSets[exercise.exerciseId].weight
+              }
+              ` +
+              exercise.sets.reduce((accSets, set, index) => {
+                return (
+                  accSets +
+                  `
+                  CREATE (workout)-[:COMMITED_SET_OF{reps: ${set.reps}, weight: ${set.weight}, created_at: datetime()}]->(ex${exercise.exerciseId})\n
+                  `
+                );
+              }, "")
+            );
+          }, "")}
+                SET workout.volume = ${workoutVolume}
+          RETURN workout
+          `
+        )
+        .then((result) => {
+          updateSession.close();
+
+          res.send({ workoutId });
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(400).send("Error updating workout");
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(400).send("Error updating workout");
+    });
+});
+
 const getSingleWorkout = asyncHandler(async (req, res) => {
   const { username, workoutId } = req.body;
 
@@ -339,6 +464,7 @@ const getSingleWorkout = asyncHandler(async (req, res) => {
 module.exports = {
   getWorkoutHistory,
   createWorkout,
+  updateWorkout,
   deleteWorkout,
   getSingleWorkout,
 };
