@@ -5,6 +5,7 @@ import FoundExercises from "./FoundExercises";
 import { selectAllExercises } from "./exercisesSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchExercises } from "./exercisesSlice";
+import ExercisesSort from "./ExercisesSort";
 
 export const TYPES = [
   "Cardio",
@@ -69,6 +70,7 @@ const Exercises = ({ pick, onSelect }) => {
           muscle={MUSCLE}
           difficulty={DIFFICULTY}
         />
+        <ExercisesSort setCurrentPage={setCurrentPage} />
         <FoundExercises
           pick={pick}
           setCurrentPage={setCurrentPage}

@@ -33,6 +33,7 @@ const ExerciseSearchForm = (props) => {
         console.log(filter);
         dispatch(exerciseActions.filterExercises(filter));
         dispatch(exerciseActions.goBackToFirstPage());
+        dispatch(exerciseActions.resetSort());
         props.setCurrentPage(1);
       }}
     >

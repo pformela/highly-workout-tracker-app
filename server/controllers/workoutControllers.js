@@ -101,11 +101,10 @@ const getWorkoutHistory = asyncHandler(async (req, res) => {
 });
 
 const createWorkout = asyncHandler(async (req, res) => {
-  const { username, duration, exercises, templateName, userWeight } = req.body;
+  const { username, duration, exercises, templateName, userWeight, imageUrl } =
+    req.body;
 
   const workoutId = uuidv4();
-
-  const imageUrl = "";
 
   const workoutVolume = exercises.reduce((acc, exercise) => {
     return (
@@ -118,17 +117,25 @@ const createWorkout = asyncHandler(async (req, res) => {
     );
   }, 0);
 
-  const bestSets = [...exercises].reduce((acc, exercise) => {
+  const bestSets = Object.values({ ...exercises }).reduce((acc, exercise) => {
     const bestSet = exercise.sets.reduce(
       (acc, set) => {
         if (set.weight > acc.weight) {
           return set;
+        } else if (set.weight === acc.weight) {
+          if (set.reps > acc.reps) {
+            return set;
+          } else {
+            return acc;
+          }
         } else {
           return acc;
         }
       },
-      { weight: 0, reps: 0 }
+
+      { reps: 0, weight: 0 }
     );
+
     return { ...acc, [exercise.exerciseId]: bestSet };
   }, {});
 

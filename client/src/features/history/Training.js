@@ -6,10 +6,7 @@ import { selectUsername } from "../user/userSlice";
 import Modal from "../../components/UI/Modal";
 import DeleteWorkoutModal from "./DeleteWorkoutModal";
 import { workoutActions } from "../workouts/workoutSlice";
-import {
-  useDeleteWorkoutMutation,
-  useGetWorkoutsMutation,
-} from "../workouts/workoutApiSlice";
+import { useDeleteWorkoutMutation } from "../workouts/workoutApiSlice";
 import ShareWorkoutModal from "./ShareWorkoutModal";
 
 const Training = ({ workout, workoutId, index }) => {
@@ -17,7 +14,7 @@ const Training = ({ workout, workoutId, index }) => {
   const [showShareWorkoutModal, setShowShareWorkoutModal] = useState(false);
   const navigate = useNavigate();
 
-  const [deleteWorkout, { isLoading }] = useDeleteWorkoutMutation();
+  const [deleteWorkout] = useDeleteWorkoutMutation();
   const dispatch = useDispatch();
 
   const username = useSelector(selectUsername);
@@ -142,31 +139,45 @@ const Training = ({ workout, workoutId, index }) => {
           </span>
         </div>
       </div>
-      <div className="flex flex-col">
-        <div className="flex flex-row">
-          <h3 className="w-1/2 text-white text-xl font-bold">Exercise</h3>
-          <h3 className="w-1/2 text-white text-xl font-bold">Best Set</h3>
+      <div className="flex flex-row w-full">
+        <div className="flex flex-col w-full w-2/3 self-center">
+          <div className="flex flex-row">
+            <h3 className="w-2/3 text-white text-xl font-bold">Exercise</h3>
+            <h3 className="w-1/3 text-white text-xl font-bold">Best Set</h3>
+          </div>
+          {Object.keys(workout.exercises).map((exercise, index) => {
+            return (
+              <div
+                key={`ex${workoutId}${index}`}
+                className="flex flex-row gap-2 text-darkGray w-full"
+              >
+                <div className="w-2/3 truncate">
+                  {Object.keys(workout.exercises[exercise].sets).length} x{" "}
+                  {workout.exercises[exercise].exerciseName}
+                </div>
+                <div className="w-1/3">
+                  {workout.exercises[exercise].bestSet.weight} kg x{" "}
+                  {workout.exercises[exercise].bestSet.reps}
+                </div>
+              </div>
+            );
+          })}
         </div>
-        {Object.keys(workout.exercises).map((exercise, index) => {
-          return (
-            <div
-              key={`ex${workoutId}${index}`}
-              className="flex flex-row gap-2 text-darkGray"
-            >
-              <div className="w-1/2">
-                {Object.keys(workout.exercises[exercise].sets).length} x{" "}
-                {workout.exercises[exercise].exerciseName.length > 28
-                  ? workout.exercises[exercise].exerciseName.substring(0, 28) +
-                    "..."
-                  : workout.exercises[exercise].exerciseName}
-              </div>
-              <div className="w-1/2">
-                {workout.exercises[exercise].bestSet.weight} kg x{" "}
-                {workout.exercises[exercise].bestSet.reps}
-              </div>
-            </div>
-          );
-        })}
+        <div className="w-1/3 h-full self-center p-2 bg-lighterDarkNavy rounded-xl">
+          {!workout.imageUrl ? (
+            <img
+              src="https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+              alt="workoutImage"
+              className="self-center w-48 m-auto rounded-xl"
+            />
+          ) : (
+            <img
+              src={workout.imageUrl}
+              alt="chevron"
+              className="self-center w-48 m-auto rounded-xl"
+            />
+          )}
+        </div>
       </div>
     </>
   );

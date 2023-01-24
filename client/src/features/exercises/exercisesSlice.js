@@ -53,6 +53,22 @@ const exerciseSlice = createSlice({
       state.currentPageExercises = state.filteredExercises.slice(0, 25);
       state.count = state.filteredExercises.length;
     },
+    sortExercises: (state, action) => {
+      const { sort, order } = action.payload;
+      state.filteredExercises = state.filteredExercises.sort((a, b) => {
+        if (order) {
+          return a[sort] > b[sort] ? 1 : -1;
+        } else {
+          return a[sort] < b[sort] ? 1 : -1;
+        }
+      });
+      state.currentPageExercises = state.filteredExercises.slice(0, 25);
+    },
+    resetSort: (state) => {
+      state.filteredExercises = state.allExercises;
+      state.currentPageExercises = state.filteredExercises.slice(0, 25);
+      state.count = state.filteredExercises.length;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(revertAll, () => initialState);

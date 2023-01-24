@@ -20,10 +20,10 @@ import {
 const Workout = ({ isTemplate }) => {
   const [showCancelWorkoutModal, setShowCancelWorkoutModal] = useState(false);
   const [showFinishWorkoutModal, setShowFinishWorkoutModal] = useState(false);
-  const [image, setImage] = useState(null);
   const [showExerciseMoreInfoModal, setShowExerciseMoreInfoModal] =
     useState(false);
   const [exerciseMoreInfo, setExerciseMoreInfo] = useState({});
+  const [imageUrl, setImageUrl] = useState("");
   const [finishing, setFinishing] = useState(false);
   const { folderId, templateId } = useParams();
 
@@ -96,6 +96,10 @@ const Workout = ({ isTemplate }) => {
   const [getWorkouts] = useGetWorkoutsMutation();
   const [updateWorkout] = useUpdateWorkoutMutation();
 
+  const handleImageUrlChange = (e) => {
+    setImageUrl(e.target.value);
+  };
+
   const handleFinishWorkout = async () => {
     const newExercises = JSON.parse(JSON.stringify(exercises));
 
@@ -117,6 +121,7 @@ const Workout = ({ isTemplate }) => {
 
     const workout = {
       username,
+      imageUrl,
       userWeight: 90,
       templateName: template.name,
       exercises: finalExercises,
@@ -138,7 +143,6 @@ const Workout = ({ isTemplate }) => {
       }
     } else {
       try {
-        console.log(workout);
         await updateWorkout({
           ...workout,
           workoutId: template.workoutId,
@@ -373,12 +377,13 @@ const Workout = ({ isTemplate }) => {
             {isTemplate && (
               <div className="flex flex-col gap-2 text-white w-max self-center items-center">
                 <h1 className="text-xl">
-                  Upload a photo to sum up your training
+                  Attach a link to a photo to sum up your training
                 </h1>
                 <input
-                  type="file"
+                  type="url"
                   name="image"
-                  onChange={(e) => setImage(e.target.files[0])}
+                  value={imageUrl}
+                  onChange={handleImageUrlChange}
                   className="block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-darkNavy border-darkGray placeholder-darkGray"
                 />
               </div>
