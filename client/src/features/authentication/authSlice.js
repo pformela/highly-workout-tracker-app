@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { revertAll } from "../../app/store";
 
 const initialState = {
   token: null,
@@ -20,7 +19,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
   },
-  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
+  extraReducers: (builder) => {},
 });
 
 export const { setCredentials, logout } = authSlice.actions;

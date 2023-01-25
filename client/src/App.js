@@ -10,6 +10,7 @@ import Workout from "./features/workouts/Workout";
 import SignUp from "./features/authentication/SignUp";
 import LoginComponent from "./features/authentication/LoginComponent";
 import SharedWorkout from "./features/workouts/SharedWorkout";
+import ExerciseForm from "./features/exercises/ExerciseForm";
 
 const App = () => {
   return (
@@ -23,7 +24,14 @@ const App = () => {
             element={<Workout isTemplate={true} />}
           />
         </Route>
-        <Route path="/exercises" element={<Exercises />} />
+        <Route path="/exercises">
+          <Route index element={<Exercises />} />
+          <Route path="addExercise" element={<ExerciseForm update={false} />} />
+          <Route
+            path="updateExercise"
+            element={<ExerciseForm update={true} />}
+          />
+        </Route>
         <Route path="/history">
           <Route index element={<TrainingHistory />} />
           <Route

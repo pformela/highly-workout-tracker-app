@@ -8,10 +8,11 @@ import { useSendLogoutMutation } from "../features/authentication/authApiSlice";
 
 const NavBar = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const [sendLogout, { isLoading, isSuccess, isError, error }] =
-    useSendLogoutMutation();
+  const [sendLogout, { isSuccess }] = useSendLogoutMutation();
 
   const navigate = useNavigate();
+
+  const refresh = () => window.location.reload(true);
 
   useEffect(() => {
     if (isSuccess) navigate("/");
@@ -89,7 +90,10 @@ const NavBar = () => {
         <div className="flex flex-row justify-self-end mr-6 gap-1">
           <Button
             className="bg-navy w-min text-bold text-whiterounded-xl self-center hover:bg-silver hover:text-darkNavy"
-            onClick={sendLogout}
+            onClick={() => {
+              sendLogout();
+              refresh();
+            }}
           >
             Logout
           </Button>

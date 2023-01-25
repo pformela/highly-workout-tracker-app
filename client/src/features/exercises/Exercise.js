@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import { TYPES, MUSCLE, DIFFICULTY } from "./Exercises";
+import { useDeleteExerciseMutation } from "./exerciseApiSlice";
+import { useDispatch } from "react-redux";
+import { exerciseActions } from "./exercisesSlice";
+import { useNavigate } from "react-router-dom";
+import Modal from "../../components/UI/Modal";
 import abdominals from "../../images/muscle_groups/abdominals.png";
 import calves from "../../images/muscle_groups/calves.png";
 import chest from "../../images/muscle_groups/chest.png";
@@ -36,17 +41,56 @@ const MUSCLE_IMAGES = {
 };
 
 const Exercise = ({ exercise }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const labels = exercise.labels.filter((label) => label !== "Exercise");
   const type = labels.find((label) => TYPES.includes(label));
   const muscle = labels.find((label) => MUSCLE.includes(label));
   const difficulty = labels.find((label) => DIFFICULTY.includes(label));
 
+  const [deleteExercise] = useDeleteExerciseMutation();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    try {
+      await deleteExercise({ exerciseId: exercise.exerciseId });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <div
-      className="flex flex-row gap-4 bg-darkNavy rounded-xl text-white px-6 py-4"
-      onClick={() => setShowMoreInfo((prev) => !prev)}
-    >
+    <div className="flex flex-row gap-4 bg-darkNavy rounded-xl text-white px-6 py-4">
+      {showDeleteModal && (
+        <Modal>
+          <div className="flex flex-col gap-4 text-center">
+            <h3 className="text-xl font-bold text-4xl">Delete Exercise</h3>
+            <p className="text-xl">
+              Are you sure you want to delete this exercise?
+            </p>
+            <div className="flex flex-row gap-2 self-center">
+              <button
+                className="px-4 py-1 rounded-md bg-red-500 border-2 border-red-500 hover:border-white font-bold text-white"
+                onClick={() => {
+                  handleDelete();
+                  setShowDeleteModal(false);
+                }}
+              >
+                Delete
+              </button>
+              <button
+                className="px-4 py-1 rounded-md bg-blue-500 border-2 border-blue-500 hover:border-white font-bold text-white"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
       <div className="flex flex-col gap-2 w-full">
         <h3 className="text-xl font-bold">{exercise.name}</h3>
         {!showMoreInfo ? (
@@ -90,12 +134,31 @@ const Exercise = ({ exercise }) => {
             </span>
           )}
         </div>
+        <div className="flex flex-row self-end gap-2 mt-4">
+          <button
+            className="px-4 py-1 rounded-md bg-gray border-2 border-gray hover:border-white font-bold text-white"
+            onClick={() => setShowMoreInfo((prev) => !prev)}
+          >
+            Show more info
+          </button>
+          <button
+            className="px-4 py-1 rounded-md bg-blue-500 border-2 border-blue-500 hover:border-white font-bold text-white"
+            onClick={() => {
+              dispatch(exerciseActions.selectCurrentUpdateExercise(exercise));
+              navigate("/exercises/updateExercise");
+            }}
+          >
+            Update
+          </button>
+          <button
+            className="px-4 py-1 rounded-md bg-red-500 border-2 border-red-500 hover:border-white font-bold text-white"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete
+          </button>
+        </div>
       </div>
-      <div
-        className={`flex flex-col bg-lighterDarkNavy rounded-xl w-max h-full ${
-          showMoreInfo ? "self-start" : "self-center"
-        }`}
-      >
+      <div className="flex flex-col bg-lighterDarkNavy rounded-xl w-max h-full self-start">
         {muscle ? (
           <img src={MUSCLE_IMAGES[muscle]} alt={muscle} className="w-40" />
         ) : (

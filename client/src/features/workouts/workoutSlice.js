@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { revertAll } from "../../app/store";
 
 const WEEK_DAYS = {
   Mon: "Monday",
@@ -71,7 +70,6 @@ const workoutSlice = createSlice({
         state.isWorkoutHistoryEmpty = true;
     },
     deleteWorkout(state, action) {
-      console.log("deleteWorkout action.payload: ", action.payload);
       delete state.workoutHistory[action.payload];
       delete state.filteredWorkoutHistory[action.payload];
       delete state.currentPageWorkouts[action.payload];
@@ -149,7 +147,7 @@ const workoutSlice = createSlice({
           return new Date(history[b].date) - new Date(history[a].date);
         } else if (sort === "name") {
           return history[a].templateName.localeCompare(history[b].templateName);
-        } else if (sort === "volume") {
+        } else {
           return history[b].volume - history[a].volume;
         }
       });
@@ -180,9 +178,7 @@ const workoutSlice = createSlice({
         }, {});
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(revertAll, () => initialState);
-  },
+  extraReducers: (builder) => {},
 });
 
 export const selectCurrentPageWorkouts = (state) =>

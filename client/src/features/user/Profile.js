@@ -16,14 +16,6 @@ const Profile = () => {
           <div className="flex flex-col items-start mt-10">
             <div className="text-2xl text-white">Username: {username}</div>
             <div className="text-2xl text-white">Email: {email}</div>
-
-            <button
-              className="bg-red-500 text-white text-xl rounded-xl p-2 mt-4 self-center"
-              onClick={() => {}}
-              disabled={true}
-            >
-              Delete Account
-            </button>
           </div>
         </div>
       </div>

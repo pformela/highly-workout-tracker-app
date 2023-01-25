@@ -12,7 +12,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["WorkoutTemplates"],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
+          await queryFulfilled;
         } catch (error) {
           console.log(error);
         }
@@ -45,7 +45,6 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           dispatch(workoutActions.setCurrentSharedWorkout(data));
-          console.log(data);
         } catch (error) {
           console.log(error);
         }
@@ -61,9 +60,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          console.log(data);
           dispatch(workoutActions.deleteWorkout(data.workoutId));
-          console.log(data);
         } catch (error) {
           console.log(error);
         }
@@ -78,8 +75,7 @@ export const workoutApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["WorkoutTemplates"],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          console.log(data);
+          await queryFulfilled;
         } catch (error) {
           console.log(error);
         }

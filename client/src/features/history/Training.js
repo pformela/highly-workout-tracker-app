@@ -21,7 +21,6 @@ const Training = ({ workout, workoutId, index }) => {
 
   const handleDelete = async () => {
     try {
-      console.log(workoutId);
       await deleteWorkout({ workoutId });
     } catch (err) {
       console.log(err);

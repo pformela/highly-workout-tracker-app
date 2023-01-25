@@ -48,13 +48,7 @@ export const templateApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const {
-            oldFolderId,
-            oldFolderName,
-            newFolderId,
-            newFolderName,
-            templateId,
-          } = data;
+          const { oldFolderId, newFolderId, templateId } = data;
           if (oldFolderId !== newFolderId) {
             dispatch(
               folderActions.deleteTemplate({

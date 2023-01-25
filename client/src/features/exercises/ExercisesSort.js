@@ -11,7 +11,6 @@ const ExercisesSort = ({ setCurrentPage }) => {
 
   return (
     <div className="flex flex-row justify-center text-white mt-4 w-2/3 m-auto gap-4">
-      <h1 className="self-center text-3xl">Sort by</h1>
       <div className="flex flex-row gap-2 self-center">
         <button
           className={`px-6 py-2 text-xl font-bold rounded-md ${
@@ -22,7 +21,7 @@ const ExercisesSort = ({ setCurrentPage }) => {
           onClick={() => {
             dispatch(
               exerciseActions.sortExercises({
-                sort: activeSortMethod,
+                sort: "name",
                 order: sortNameAscending,
               })
             );
@@ -42,7 +41,7 @@ const ExercisesSort = ({ setCurrentPage }) => {
           onClick={() => {
             dispatch(
               exerciseActions.sortExercises({
-                sort: activeSortMethod,
+                sort: "muscle",
                 order: sortMuscleAscending,
               })
             );
@@ -62,7 +61,7 @@ const ExercisesSort = ({ setCurrentPage }) => {
           onClick={() => {
             dispatch(
               exerciseActions.sortExercises({
-                sort: activeSortMethod,
+                sort: "difficulty",
                 order: sortDifficultyAscending,
               })
             );
@@ -78,6 +77,7 @@ const ExercisesSort = ({ setCurrentPage }) => {
           onClick={() => {
             setActiveSortMethod("");
             dispatch(exerciseActions.resetSort());
+            setCurrentPage(1);
           }}
         >
           Reset

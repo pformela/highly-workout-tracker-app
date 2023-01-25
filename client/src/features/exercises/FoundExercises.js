@@ -3,13 +3,15 @@ import { useSelector } from "react-redux";
 import ExercisesPageNavigation from "./ExercisesPageNavigation";
 import Exercise from "./Exercise";
 import PickAnExercise from "./PickAnExercise";
-import {
-  selectCurrentPageExercises,
-  selectExerciseCount,
-} from "./exercisesSlice";
+import { selectExerciseCount } from "./exercisesSlice";
 
-const FoundExercises = ({ pick, onSelect, currentPage, setCurrentPage }) => {
-  const exercises = useSelector(selectCurrentPageExercises);
+const FoundExercises = ({
+  pick,
+  onSelect,
+  currentPage,
+  setCurrentPage,
+  exercises,
+}) => {
   const count = useSelector(selectExerciseCount);
   const loading = useSelector((state) => state.exercise.loading);
 

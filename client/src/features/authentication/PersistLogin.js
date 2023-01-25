@@ -1,10 +1,11 @@
-import { Outlet, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useRef, useState } from "react";
 import { useRefreshMutation } from "./authApiSlice";
 import usePersist from "../../hooks/usePersist";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "./authSlice";
 import Loading from "../../components/UI/Loading";
+import LoginComponent from "./LoginComponent";
 
 const PersistLogin = () => {
   const [persist] = usePersist();
@@ -48,17 +49,15 @@ const PersistLogin = () => {
     content = <Loading />;
   } else if (isError) {
     // persist is true, token is undefined
-    console.log(token);
-    content = <Navigate to="/login" replace={true} />;
+    content = <LoginComponent />;
   } else if (isSuccess && trueSuccess) {
     // persist is true, token is defined
-    console.log("success");
     content = <Outlet />;
   } else if (token && isUninitialized) {
     // persist is true, token is defined
     content = <Outlet />;
   } else {
-    content = <Navigate to="/login" replace={true} />;
+    content = <LoginComponent />;
   }
 
   return content;

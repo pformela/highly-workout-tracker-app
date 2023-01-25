@@ -3,7 +3,6 @@ import { useGetWorkoutsMutation } from "../workouts/workoutApiSlice";
 import { selectUsername } from "../user/userSlice";
 import {
   selectWorkoutHistory,
-  selectFilteredWorkoutHistory,
   selectIsWorkoutHistoryEmpty,
   selectCurrentPageWorkouts,
 } from "../workouts/workoutSlice";
@@ -15,14 +14,17 @@ import HistorySort from "./HistorySort";
 import HistoryPageNavigation from "./HistoryPageNavigation";
 
 const TrainingHistory = () => {
-  const [getWorkouts, { data, error, isLoading }] = useGetWorkoutsMutation();
+  const [getWorkouts] = useGetWorkoutsMutation();
   const username = useSelector(selectUsername);
   const workouts = useSelector(selectCurrentPageWorkouts);
   const allWorkouts = useSelector(selectWorkoutHistory);
   const isEmpty = useSelector(selectIsWorkoutHistoryEmpty);
+
+  const [pageNumber, setPageNumber] = useState(1);
+
   const fetchWorkouts = async () => {
     try {
-      const result = await getWorkouts({ username });
+      await getWorkouts({ username });
     } catch (error) {
       console.log(error);
     }
@@ -31,6 +33,7 @@ const TrainingHistory = () => {
   useEffect(() => {
     if (JSON.stringify(allWorkouts) === "{}" && !isEmpty) fetchWorkouts();
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -39,9 +42,12 @@ const TrainingHistory = () => {
       <h1 className="text-5xl text-bold text-white mt-6 text-center">
         Training History
       </h1>
-      <HistoryFilter />
-      <HistorySort />
-      <HistoryPageNavigation />
+      <HistoryFilter pageNumber={pageNumber} setPageNumber={setPageNumber} />
+      <HistorySort pageNumber={pageNumber} setPageNumber={setPageNumber} />
+      <HistoryPageNavigation
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+      />
       <ul className="flex flex-col mt-6 gap-4 bg-lighterDarkNavy p-4 w-3/5 m-auto text-black rounded-xl border-4 border-darkNavy">
         {Object.keys(workouts).length === 0 && (
           <li className="flex flex-col bg-darkNavy gap-1 p-4 rounded-xl">
@@ -65,7 +71,10 @@ const TrainingHistory = () => {
           );
         })}
       </ul>
-      <HistoryPageNavigation />
+      <HistoryPageNavigation
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+      />
     </div>
   );
 };

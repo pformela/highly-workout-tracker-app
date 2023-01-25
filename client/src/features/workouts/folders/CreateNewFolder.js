@@ -8,7 +8,7 @@ const CreateNewFolder = (props) => {
   const [folderName, setFolderName] = useState("");
   const [folderNameIsValid, setFolderNameIsValid] = useState(true);
   const username = useSelector(selectUsername);
-  const [createFolder, { isLoading }] = useCreateTemplateFolderMutation();
+  const [createFolder] = useCreateTemplateFolderMutation();
 
   const dispatch = useDispatch();
 
@@ -25,13 +25,11 @@ const CreateNewFolder = (props) => {
     if (folderName.trim().length === 0) {
       setFolderNameIsValid(false);
     } else {
-      console.log("adding new folder");
       try {
         const result = await createFolder({
           username,
           folderName,
         });
-        console.log(result);
         dispatch(folderActions.addFolder(result.data));
         props.onClose();
       } catch (err) {

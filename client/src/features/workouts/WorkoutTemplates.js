@@ -33,7 +33,6 @@ const WorkoutTemplates = ({ add }) => {
     setFolderIdIsValid
   ) => {
     e.preventDefault();
-    console.log("wysylam");
     const tempNameValid = templateName.trim().length > 2;
     const folderIdValid = folderId !== "Select folder";
     const exercisesIsValid = validateExerciseInputs();
@@ -44,7 +43,6 @@ const WorkoutTemplates = ({ add }) => {
       setFolderIdIsValid(false);
     }
     if (tempNameValid && folderIdValid && exercisesIsValid) {
-      console.log("Wszystko grA");
       const partiallyFinalExerciseList = JSON.parse(JSON.stringify(exercises));
       const finalExerciseList = partiallyFinalExerciseList.map((el) => {
         delete el["nameIsValid"];
@@ -55,14 +53,13 @@ const WorkoutTemplates = ({ add }) => {
       });
 
       try {
-        const { name } = await createTemplate({
+        await createTemplate({
           username,
           folderId,
           name: templateName,
           exercises: finalExerciseList,
         }).unwrap();
 
-        console.log("Created template: " + name);
         setShowCreateTemplate(false);
       } catch (err) {
         console.log(err);
@@ -74,14 +71,9 @@ const WorkoutTemplates = ({ add }) => {
           folderName: selectedFolderName,
           folderId,
         }).unwrap();
-        console.log(
-          "Updated list of templates for folder: " + selectedFolderName
-        );
       } catch (err) {
         console.log(err);
       }
-
-      console.log(finalExerciseList);
     }
     setIsSubmitting(false);
   };

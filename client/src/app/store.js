@@ -1,18 +1,13 @@
-import {
-  combineReducers,
-  configureStore,
-  createAction,
-} from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import exerciseReducer from "../features/exercises/exercisesSlice";
 import authReducer from "../features/authentication/authSlice";
 import userReducer from "../features/user/userSlice";
 import folderReducer from "../features/workouts/folders/folderSlice";
 import workoutReducer from "../features/workouts/workoutSlice";
+import templateReducer from "../features/workouts/templates/templateSlice";
 import { apiSlice } from "./api/apiSlice";
-// import logger from "redux-logger";
-
-export const revertAll = createAction("REVERT_ALL");
+import logger from "redux-logger";
 
 const appReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
@@ -21,6 +16,7 @@ const appReducer = combineReducers({
   user: userReducer,
   folder: folderReducer,
   workouts: workoutReducer,
+  template: templateReducer,
 });
 
 const reducerProxy = (state, action) => {
@@ -33,7 +29,7 @@ const reducerProxy = (state, action) => {
 export const store = configureStore({
   reducer: reducerProxy,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware), //.concat(logger),
+    getDefaultMiddleware().concat(apiSlice.middleware).concat(logger),
   devTools: true,
 });
 

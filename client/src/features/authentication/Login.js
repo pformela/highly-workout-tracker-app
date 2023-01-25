@@ -15,6 +15,10 @@ const Login = () => {
   const [errMsg, setErrMsg] = useState("");
   const [persist, setPersist] = usePersist();
 
+  const refresh = () => {
+    window.location.reload();
+  };
+
   useEffect(() => {
     emailRef.current.focus();
   }, []);
@@ -56,8 +60,8 @@ const Login = () => {
           }).unwrap();
           dispatch(setCredentials({ token }));
           dispatch(userActions.setUser({ email, username, userId }));
-
           navigate("/");
+          refresh();
         } catch (err) {
           if (!err.status) {
             setErrMsg("No server response.");

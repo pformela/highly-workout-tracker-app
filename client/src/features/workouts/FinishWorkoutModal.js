@@ -1,9 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const FinishWorkoutModal = ({ onClose, onFinish }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-white text-4xl text-center">Finishing workout</h1>
@@ -22,7 +19,6 @@ const FinishWorkoutModal = ({ onClose, onFinish }) => {
         <button
           className="text-white text-xl text-center bg-green-500 px-6 py-2 rounded-md font-bold border-2 border-green-500 hover:border-white"
           onClick={() => {
-            // navigate("/user/startWorkout");
             onFinish();
             onClose();
           }}

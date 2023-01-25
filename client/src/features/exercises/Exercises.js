@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../../components/NavBar";
 import ExerciseSearchForm from "./ExerciseSearchForm";
 import FoundExercises from "./FoundExercises";
-import { selectAllExercises } from "./exercisesSlice";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchExercises } from "./exercisesSlice";
+import {
+  selectAllExercises,
+  selectCurrentPageExercises,
+} from "./exercisesSlice";
+import { useSelector } from "react-redux";
 import ExercisesSort from "./ExercisesSort";
+import { useGetExercisesMutation } from "./exerciseApiSlice";
 
 export const TYPES = [
   "Cardio",
@@ -36,17 +39,28 @@ export const MUSCLE = [
   "Triceps",
 ];
 
+export const EQUIPMENT = ["barbell", "dumbbell", "other"];
+
 export const DIFFICULTY = ["Beginner", "Intermediate", "Expert"];
 
 const Exercises = ({ pick, onSelect }) => {
   const exercises = useSelector(selectAllExercises);
+  const currentPageExercises = useSelector(selectCurrentPageExercises);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const dispatch = useDispatch();
+  const [getExercises] = useGetExercisesMutation();
+
+  const fetchExercises = async () => {
+    try {
+      await getExercises();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     if (exercises.length === 0) {
-      dispatch(fetchExercises());
+      fetchExercises();
     }
     window.scrollTo(0, 0);
     // eslint-disable-next-line
@@ -74,6 +88,7 @@ const Exercises = ({ pick, onSelect }) => {
         <FoundExercises
           pick={pick}
           setCurrentPage={setCurrentPage}
+          exercises={currentPageExercises}
           onSelect={onSelect}
           currentPage={currentPage}
         />

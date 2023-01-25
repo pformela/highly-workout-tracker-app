@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { workoutActions } from "../workouts/workoutSlice";
 
-const HistorySort = () => {
+const HistorySort = ({ pageNumber, setPageNumber }) => {
   const [activeSortMethod, setActiveSortMethod] = useState("");
   const [sortNameAscending, setSortNameAscending] = useState(true);
   const [sortDateAscending, setSortDateAscending] = useState(true);
@@ -28,6 +28,7 @@ const HistorySort = () => {
               })
             );
             setSortDateAscending(!sortDateAscending);
+            setPageNumber(1);
           }}
         >
           Date
@@ -47,6 +48,7 @@ const HistorySort = () => {
               })
             );
             setSortVolumeAscending(!sortVolumeAscending);
+            setPageNumber(1);
           }}
         >
           Volume
@@ -66,6 +68,7 @@ const HistorySort = () => {
               })
             );
             setSortNameAscending(!sortNameAscending);
+            setPageNumber(1);
           }}
         >
           Name

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { selectNumberOfResults } from "../workouts/workoutSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { workoutActions } from "../workouts/workoutSlice";
 
-const HistoryPageNavigation = () => {
+const HistoryPageNavigation = ({ pageNumber, setPageNumber }) => {
   const numberOfResults = useSelector(selectNumberOfResults);
-  const [pageNumber, setPageNumber] = useState(1);
   const numberOfPages = Math.max(Math.ceil(numberOfResults / 5), 1);
   const dispatch = useDispatch();
 

@@ -3,7 +3,7 @@ import { workoutActions } from "../workouts/workoutSlice";
 import { Field, Formik } from "formik";
 import { useDispatch } from "react-redux";
 
-const HistoryFilter = () => {
+const HistoryFilter = ({ pageNumber, setPageNumber }) => {
   const dispatch = useDispatch();
 
   return (
@@ -23,6 +23,7 @@ const HistoryFilter = () => {
               : values.checked,
         };
         dispatch(workoutActions.filterWorkoutHistory(filter));
+        setPageNumber(1);
       }}
     >
       {({ values, handleChange, handleSubmit, resetForm }) => (

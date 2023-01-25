@@ -8,7 +8,7 @@ const PickAnExercise = (props) => {
 
   return (
     <div
-      className="flex flex-col gap-2 bg-darkNavy rounded-xl text-white px-6 py-4 hover:cursor-pointer"
+      className="flex flex-col gap-2 bg-darkNavy rounded-xl text-white px-6 py-4 hover:cursor-pointer max-w-md"
       onClick={() => setShow((prev) => !prev)}
     >
       <div className="flex flex-row justify-between">
@@ -17,7 +17,6 @@ const PickAnExercise = (props) => {
           className="flex flex-col bg-green-500 h-8 justify-center font-bold rounded-xl border-2 border-green-500 hover:border-white"
           onClick={() => {
             props.onSelect(props.name, props.exerciseId);
-            console.log("props.name: " + props.name);
           }}
         >
           Select

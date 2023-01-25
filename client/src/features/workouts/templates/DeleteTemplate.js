@@ -9,9 +9,8 @@ const DeleteTemplate = ({ folderId, templateId, templateName, onClose }) => {
   const [deleteTemplate] = useDeleteTemplateMutation();
 
   const handleDelete = () => {
-    console.log("Delete template");
     try {
-      const { data } = deleteTemplate({
+      deleteTemplate({
         username,
         folderId,
         templateId,

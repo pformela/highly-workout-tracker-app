@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -17,12 +17,11 @@ const SharedWorkout = () => {
     selectIsCurrentSharedWorkoutEmpty
   );
 
-  const [getSingleWorkout, { data, isLoading }] = useGetSingleWorkoutMutation();
+  const [getSingleWorkout, { isLoading }] = useGetSingleWorkoutMutation();
 
   const fetchWorkout = async () => {
     try {
-      console.log(username, workoutId);
-      const response = await getSingleWorkout({ username, workoutId });
+      await getSingleWorkout({ username, workoutId });
     } catch (err) {
       console.log(err);
     }
@@ -31,11 +30,13 @@ const SharedWorkout = () => {
   useEffect(() => {
     if (JSON.stringify(workout) === "{}" && !isCurrentSharedWorkoutEmpty)
       fetchWorkout();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const headerContent = (
     <div className="flex flex-col mb-12">
-      <img src={whiteLogo} className="w-3/5 self-center" />
+      <img src={whiteLogo} className="w-3/5 self-center" alt="logo" />
       <h1 className="text-4xl text-white text-center">
         Start your workout journey{" "}
         <Link target="_blank" rel="noopener noreferrer" to="/signup">

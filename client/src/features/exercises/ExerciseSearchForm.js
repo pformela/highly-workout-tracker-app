@@ -2,9 +2,11 @@ import React from "react";
 import { Formik } from "formik";
 import { useDispatch } from "react-redux";
 import { exerciseActions } from "./exercisesSlice";
+import { useNavigate } from "react-router-dom";
 
 const ExerciseSearchForm = (props) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <Formik
@@ -30,9 +32,7 @@ const ExerciseSearchForm = (props) => {
               ? ""
               : values.exerciseDifficulty,
         };
-        console.log(filter);
         dispatch(exerciseActions.filterExercises(filter));
-        dispatch(exerciseActions.goBackToFirstPage());
         dispatch(exerciseActions.resetSort());
         props.setCurrentPage(1);
       }}
@@ -155,12 +155,23 @@ const ExerciseSearchForm = (props) => {
               ))}
             </div>
           </div>
-          <button
-            className="bg-darkNavy text-2xl px-4 py-1 rounded-md font-bold text-silver hover:bg-white hover:text-darkNavy"
-            type="submit"
-          >
-            Search
-          </button>
+          <div className="flex flex-row gap-2">
+            <button
+              className="bg-darkNavy text-2xl px-4 py-1 rounded-md font-bold text-silver hover:bg-white hover:text-darkNavy"
+              type="submit"
+            >
+              Search
+            </button>
+            <button
+              className="bg-green-500 text-2xl px-4 py-1 rounded-md font-bold text-silver hover:bg-white hover:text-darkNavy"
+              type="button"
+              onClick={() => {
+                navigate("/exercises/addExercise");
+              }}
+            >
+              Create Exercise
+            </button>
+          </div>
         </form>
       )}
     </Formik>

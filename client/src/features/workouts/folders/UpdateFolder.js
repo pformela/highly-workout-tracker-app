@@ -6,7 +6,7 @@ const UpdateFolder = ({ folderName, username, folderId, onClose }) => {
   const [newFolderName, setNewFolderName] = useState(folderName);
   const [isNewFolderNameValid, setIsNewFolderNameValid] = useState(true);
 
-  const [updateFolder, { isLoading }] = useUpdateTemplateFolderMutation();
+  const [updateFolder] = useUpdateTemplateFolderMutation();
 
   const handleFolderNameChange = (e) => {
     if (e.target.value.trim().length > 0) {
@@ -20,12 +20,11 @@ const UpdateFolder = ({ folderName, username, folderId, onClose }) => {
 
   const updateFolderName = async () => {
     try {
-      const result = await updateFolder({
+      await updateFolder({
         folderId,
         folderName: newFolderName,
         username,
       });
-      console.log(result.data);
       onClose();
     } catch (err) {
       console.log(err);
