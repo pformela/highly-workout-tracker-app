@@ -20,11 +20,16 @@ const PersistLogin = () => {
   const [refresh, { isUninitialized, isLoading, isSuccess, isError }] =
     useRefreshMutation();
 
+  const refreshWindow = () => {
+    window.location.reload();
+  };
+
   const verifyRefreshToken = async () => {
     try {
       await refresh();
       setTrueSuccess(true);
       navigate(location.pathname, { replace: true });
+      // refreshWindow();
     } catch (err) {
       console.log(err);
     }
